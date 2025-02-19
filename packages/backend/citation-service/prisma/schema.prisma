@@ -16,5 +16,65 @@ id        Int      @id @default(autoincrement())
 createdAt DateTime @default(now())
 updatedAt DateTime @updatedAt
 title     String
-url      String
+url       String
+classifiers Classifier[]
+authors   Author[]
+source    Source?  @relation(fields: [sourceId], references: [id])
+sourceId  Int?
+publishedTime DateTime?
+publishedYear Int?
+publishedMonth Int? @db.SmallInt
+publishedDay Int? @db.SmallInt
+publishedOn String? @default(dbgenerated("CASE WHEN \"publishedTime\" IS NOT NULL THEN to_char(\"publishedTime\", 'YYYY-MM-DD') WHEN \"publishedYear\" IS NOT NULL AND \"publishedMonth\" IS NOT NULL AND \"publishedDay\" IS NOT NULL THEN concat(\"publishedYear\"::text, '-', LPAD(\"publishedMonth\"::text, 2, '0'), '-', LPAD(\"publishedDay\"::text, 2, '0')) ELSE NULL END"))
+}
+
+model Author {
+id        Int      @id @default(autoincrement())
+createdAt DateTime @default(now())
+updatedAt DateTime @updatedAt
+surName   String
+givenName String
+fullName  String?  @default(dbgenerated("concat(\"surName\", ', ', \"givenName\")"))
+citations Citation[]
+classifiers Classifier[] @relation("AuthorToClassifier")
+
+@@index([fullName])
+@@unique([surName, givenName])
+}
+
+model Source {
+id            Int       @id @default(autoincrement())
+createdAt     DateTime  @default(now())
+updatedAt     DateTime  @updatedAt
+referredToAs  String
+url           String
+type          String
+citations     Citation[]
+classifiers   Classifier[]
+
+// Self-referential relationships
+parentSources Source[]  @relation("SourceHierarchy")
+childSources  Source[]  @relation("SourceHierarchy")
+
+@@index([url])
+@@index([type])
+@@index([referredToAs])
+@@unique([url])
+}
+
+model Classifier {
+id            Int       @id @default(autoincrement())
+createdAt     DateTime  @default(now())
+updatedAt     DateTime  @updatedAt
+referredToAs  String
+citations     Citation[]
+sources       Source[]
+authors       Author[]  @relation("AuthorToClassifier")
+
+// Self-referential relationships
+parentClassifiers Classifier[]  @relation("ClassifierHierarchy")
+childClassifiers  Classifier[]  @relation("ClassifierHierarchy")
+
+@@index([referredToAs])
+@@unique([referredToAs])
 }

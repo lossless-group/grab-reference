@@ -1,29 +1,47 @@
-import Fastify, { FastifyInstance } from 'fastify';
+import Fastify from 'fastify'
+import prisma from './lib/prisma'
 
-const server: FastifyInstance = Fastify({
-logger: true
-});
+const fastify = Fastify({
+  logger: true
+})
 
 // Health check endpoint
-server.get('/health', async () => {
-return { status: 'ok' };
-});
+fastify.get('/health', async () => {
+  return { status: 'ok' }
+})
+
+// Example endpoint using Prisma
+fastify.get('/citations', async () => {
+  try {
+    const citations = await prisma.citation.findMany({
+      include: {
+        authors: true,
+        source: true,
+        classifiers: true
+      }
+    })
+    return citations
+  } catch (error) {
+    fastify.log.error(error)
+    throw error
+  }
+})
 
 // Start server
 const start = async (): Promise<void> => {
-try {
-    await server.listen({ port: 8080, host: '0.0.0.0' });
-} catch (err) {
-    server.log.error(err);
-    process.exit(1);
+  try {
+    await fastify.listen({ port: 8080, host: '0.0.0.0' })
+  } catch (err) {
+    fastify.log.error(err)
+    process.exit(1)
+  }
 }
-};
 
 // Handle graceful shutdown
 process.on('SIGINT', async () => {
-await server.close();
-process.exit(0);
-});
+  await fastify.close()
+  process.exit(0)
+})
 
-start();
+start()
 

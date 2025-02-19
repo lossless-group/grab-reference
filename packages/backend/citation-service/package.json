@@ -9,16 +9,19 @@
     "build": "tsc -p tsconfig.json",
     "start": "node --enable-source-maps ./dist/index.js",
     "prisma:generate": "prisma generate",
-    "prebuild": "npm run prisma:generate"
+    "prisma:migrate": "prisma migrate deploy",
+    "prebuild": "pnpm prisma:generate",
+    "predev": "pnpm prisma:generate",
+    "prepare": "pnpm prisma:generate"
 },
 "dependencies": {
     "@prisma/client": "^5.8.1",
     "fastify": "^4.25.2",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "prisma": "^5.8.1"
 },
 "devDependencies": {
     "@types/node": "^20.11.5",
-    "prisma": "^5.8.1",
     "tsx": "^4.7.0",
     "typescript": "^5.3.3"
 }

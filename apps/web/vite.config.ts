@@ -1,10 +1,28 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { resolve } from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-plugins: [react()],
+plugins: [
+  react({
+    babel: {
+      plugins: [
+        ['@stylexjs/babel-plugin', {
+          dev: true,
+          // Required for CSS variable support
+          runtime: true,
+          // Required for dynamic styles
+          genConditionalClasses: true,
+          styleResolution: 'application-order',
+          unstable_moduleResolution: {
+            type: 'commonJS',
+            rootDir: __dirname,
+          },
+        }],
+      ],
+    },
+  }),
+],
 build: {
     outDir: 'dist',
     emptyOutDir: true,
@@ -13,11 +31,6 @@ build: {
 server: {
     port: 3000,
     host: true
-},
-resolve: {
-    alias: {
-    '@': resolve(__dirname, './src')
-    }
 }
 })
 

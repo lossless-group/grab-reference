@@ -7,6 +7,8 @@
     "build": "pnpm -r build",
     "test": "pnpm -r test",
     "lint": "pnpm -r lint",
+    "db:generate": "pnpm --filter @citation-manager/citation-service prisma:generate",
+    "db:migrate": "pnpm --filter @citation-manager/citation-service prisma:migrate",
     "docker:build": "docker build -t citation-manager .",
     "docker:run": "docker run -p 3000:3000 -p 8080:8080 citation-manager"
   },
