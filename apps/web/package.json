@@ -8,10 +8,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "@stylexjs/stylex": "^0.5.1",
-    "skip": "^1.1.0",
+    "skip": "^0.0.13",
     "@citation-manager/shared": "workspace:*"
   },
   "devDependencies": {
