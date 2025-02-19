@@ -44,13 +44,41 @@ const styles = stylex.create({
     ':hover': {
       backgroundColor: '#0060df'
     }
+  },
+  queueContainer: {
+    width: '100%',
+    maxWidth: '500px',
+    marginTop: '2rem',
+    padding: '0 1rem'
+  },
+  queueList: {
+    listStyle: 'none',
+    padding: 0,
+    margin: 0,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.5rem'
+  },
+  queueItem: {
+    padding: '0.75rem',
+    backgroundColor: 'white',
+    borderRadius: '4px',
+    border: '1px solid #ccc',
+    fontSize: '0.875rem',
+    wordBreak: 'break-all'
   }
 });
 
 const App: React.FC = () => {
+  const [citeQueue, setCiteQueue] = React.useState<string[]>([]);
+  const [inputUrl, setInputUrl] = React.useState('');
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // We'll implement submission logic later
+    if (inputUrl.trim()) {
+      setCiteQueue(prev => [...prev, inputUrl.trim()]);
+      setInputUrl(''); // Clear the input after submission
+    }
   };
 
   return (
@@ -62,11 +90,25 @@ const App: React.FC = () => {
           type="url"
           placeholder="Enter URL"
           required
+          value={inputUrl}
+          onChange={(e) => setInputUrl(e.target.value)}
         />
         <button {...stylex.props(styles.button)} type="submit">
           Get Citation
         </button>
       </form>
+      
+      {citeQueue.length > 0 && (
+        <div {...stylex.props(styles.queueContainer)}>
+          <ul {...stylex.props(styles.queueList)}>
+            {[...citeQueue].reverse().map((url, index) => (
+              <li key={index} {...stylex.props(styles.queueItem)}>
+                {url}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };
