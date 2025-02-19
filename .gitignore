@@ -1,23 +1,38 @@
 # Dependencies
 node_modules
 .pnpm-store
+.npm
+.pnpm-debug.log
 
 # Build outputs
 dist
 build
+lib
+.next
+out
+coverage
 
 # Environment files
 .env
 .env.local
 .env.*.local
+.env.development
+.env.test
+.env.production
 
 # Editor directories
 .vscode
 .idea
+.vs
+*.sublime-*
+*.swp
+*.swo
 
 # System files
 .DS_Store
 Thumbs.db
+*.pem
+.directory
 
 # Logs
 *.log
@@ -25,6 +40,37 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+lerna-debug.log*
 
 # TypeScript
 *.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# Testing
+coverage
+.nyc_output
+
+# Docker
+.docker
+docker-compose.override.yml
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+
+# Prisma
+prisma/*.db
+migrations/
+
+# Temporary files
+*.tmp
+*.temp
+.cache
+
+# OS generated files
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+desktop.ini
