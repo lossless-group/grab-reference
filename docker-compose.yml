@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      target: builder
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: pnpm dev
+    environment:
+      - NODE_ENV=development
+
+  citation-service:
+    build:
+      context: .
+      dockerfile: packages/backend/citation-service/Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./packages/backend/citation-service:/app
+      - /app/node_modules
+    environment:
+      - DATABASE_URL=file:./dev.db 
