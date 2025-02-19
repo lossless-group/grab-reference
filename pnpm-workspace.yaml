@@ -1,0 +1,19 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+  - 'packages/backend/*'
+  - 'packages/shared/*'
+
+supportedRange: ">=19.0.0"
+
+peerDependencyRules:
+  allowAny:
+    - react
+    - react-dom
+    - stylex
+    - skip
+
+packageExtensions:
+  '@stylexjs/stylex@*':
+    peerDependencies:
+      react: '>=19.0.0'

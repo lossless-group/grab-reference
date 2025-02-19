@@ -5,6 +5,7 @@ mkdir -p apps/web/src/components
 mkdir -p packages/{backend,shared}
 mkdir -p packages/backend/{citation-service,crawler-service,search-service}
 mkdir -p packages/shared/{types,utils}
+mkdir -p docker
 
 # Create pnpm workspace config
 cat > pnpm-workspace.yaml << EOL

@@ -4,7 +4,7 @@ services:
   web:
     build:
       context: .
-      target: builder
+      dockerfile: docker/web.Dockerfile
     ports:
       - "3000:3000"
     volumes:
@@ -17,7 +17,7 @@ services:
   citation-service:
     build:
       context: .
-      dockerfile: packages/backend/citation-service/Dockerfile
+      dockerfile: docker/citation-service.Dockerfile
     ports:
       - "8080:8080"
     volumes:
