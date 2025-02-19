@@ -7,6 +7,28 @@ mkdir -p packages/backend/{citation-service,crawler-service,search-service}
 mkdir -p packages/shared/{types,utils}
 mkdir -p docker
 
+mkdir -p packages/backend/citation-service/prisma && cat > packages/backend/citation-service/prisma/schema.prisma << 'EOF'
+// This is your Prisma schema file
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Define your initial models here
+model Citation {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  title     String
+  url      String
+}
+                                                           
 # Create pnpm workspace config
 cat > pnpm-workspace.yaml << EOL
 packages:
@@ -151,3 +173,5 @@ EOL
 
 # Make the script executable
 chmod +x setup.sh 
+
+EOF

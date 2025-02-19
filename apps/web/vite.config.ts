@@ -1,18 +1,24 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import styleX from '@stylexjs/rollup-plugin';
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import { resolve } from 'path'
 
+// https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
-    react(),
-    styleX({
-      // StyleX options
-      dev: process.env.NODE_ENV === 'development',
-      runtimeInjection: true,
-      assumeProductionMode: process.env.NODE_ENV === 'production',
-    })
-  ],
-  server: {
-    port: 3000
-  }
-}); 
+plugins: [react()],
+root: __dirname,
+build: {
+    outDir: 'dist',
+    emptyOutDir: true,
+    sourcemap: true
+},
+server: {
+    port: 3000,
+    host: true
+},
+resolve: {
+    alias: {
+    '@': resolve(__dirname, './src')
+    }
+}
+})
+

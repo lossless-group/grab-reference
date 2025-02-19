@@ -1,12 +1,13 @@
 FROM node:20-alpine AS builder
 
 # Install pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN npm install -g pnpm
 
 WORKDIR /app
 
 # Copy workspace config and package files
 COPY pnpm-workspace.yaml ./
+COPY pnpm-lock.yaml ./
 COPY package.json ./
 COPY apps/web/package.json ./apps/web/
 COPY packages/shared/*/package.json ./packages/shared/
