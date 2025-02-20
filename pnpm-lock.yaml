@@ -83,6 +83,15 @@ importers:
         specifier: ^5.3.3
         version: 5.7.3
 
+  packages/backend/crawler-service:
+    devDependencies:
+      '@types/node':
+        specifier: ^20.11.5
+        version: 20.17.19
+      typescript:
+        specifier: ^5.3.3
+        version: 5.7.3
+
   packages/shared:
     devDependencies:
       '@types/node':

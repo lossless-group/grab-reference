@@ -1,7 +1,6 @@
 import * as React from 'react';
 import * as stylex from '@stylexjs/stylex';
-
-type StyleXStyles = typeof styles;
+import { observeUrl } from '@citation-manager/shared/utils/url-observer';
 
 const styles = stylex.create({
   container: {
@@ -10,7 +9,7 @@ const styles = stylex.create({
     justifyContent: 'center',
     alignItems: 'center',
     minHeight: '100vh',
-    backgroundColor: 'var(--background-color, #f0f2f5)'
+    backgroundColor: 'white'
   },
   text: {
     fontSize: '2rem',
@@ -66,23 +65,45 @@ const styles = stylex.create({
     border: '1px solid #ccc',
     fontSize: '0.875rem',
     wordBreak: 'break-all'
+  },
+  toast: {
+    position: 'fixed',
+    bottom: '20px',
+    right: '20px',
+    padding: '1rem',
+    backgroundColor: '#ff4444',
+    color: 'white',
+    borderRadius: '4px',
+    boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+    zIndex: 1000
   }
 });
 
 const App: React.FC = () => {
+  console.log('App component rendering');
   const [citeQueue, setCiteQueue] = React.useState<string[]>([]);
   const [inputUrl, setInputUrl] = React.useState('');
+  const [error, setError] = React.useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (inputUrl.trim()) {
-      setCiteQueue(prev => [...prev, inputUrl.trim()]);
-      setInputUrl(''); // Clear the input after submission
+      try {
+        const result = await observeUrl(inputUrl.trim());
+        console.log('Citation data:', result);
+        setCiteQueue(prev => [...prev, inputUrl.trim()]);
+        setInputUrl('');
+        setError(null);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Unknown error');
+        setTimeout(() => setError(null), 3000);
+      }
     }
   };
 
   return (
     <div {...stylex.props(styles.container)}>
+      <h1>Citation Manager</h1>
       <h1 {...stylex.props(styles.text)}>Grab a citation</h1>
       <form {...stylex.props(styles.form)} onSubmit={handleSubmit}>
         <input
@@ -107,6 +128,11 @@ const App: React.FC = () => {
               </li>
             ))}
           </ul>
+        </div>
+      )}
+      {error && (
+        <div {...stylex.props(styles.toast)}>
+          {error}
         </div>
       )}
     </div>

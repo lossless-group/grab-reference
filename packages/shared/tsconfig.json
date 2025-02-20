@@ -11,9 +11,9 @@
     "declarationMap": true,
     "sourceMap": true,
     "outDir": "./dist",
-    "rootDir": "./src"
+    "rootDir": "."
 },
-"include": ["src/**/*"],
+"include": ["utils/*"],
 "exclude": ["node_modules", "dist"]
 }
 
