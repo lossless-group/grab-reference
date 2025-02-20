@@ -1,6 +1,6 @@
 import { isYouTubeUrl, isGoogleBooksUrl } from './url-handler';
-import { fetchYouTubeData } from '../../backend/crawler-service/api-handlers/youtube-api-handler';
-import { fetchGoogleBookData } from '../../backend/crawler-service/api-handlers/google-books-api-handler';
+import { fetchYouTubeData } from '../api-handlers/youtube-api-handler';
+import { fetchGoogleBookData } from '../api-handlers/google-books-api-handler';
 
 type SourceType = 'youtube' | 'google-books' | 'unsupported';
 

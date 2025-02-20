@@ -6,8 +6,8 @@ set -e
 # Create root project directory structure
 mkdir -p apps/web/src/components
 mkdir -p packages/{backend,shared}
-mkdir -p packages/backend/{citation-service,crawler-service,search-service}
-mkdir -p packages/shared/{types,utils}
+mkdir -p packages/backend/{citation-service,search-service}
+mkdir -p packages/shared/{types,utils,api-handlers}
 mkdir -p docker
 
 # Create Prisma schema first
