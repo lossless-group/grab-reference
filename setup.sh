@@ -53,10 +53,10 @@ cat > packages/backend/citation-service/package.json << EOL
     "prepare": "pnpm prisma:generate"
   },
   "dependencies": {
-    "@prisma/client": "^5.8.1",
+    "@prisma/client": "^6.4.1",
     "fastify": "^4.25.2",
     "zod": "^3.22.4",
-    "prisma": "^5.8.1"
+    "prisma": "^6.4.1"
   },
   "devDependencies": {
     "@types/node": "^20.11.5",
