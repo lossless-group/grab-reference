@@ -99,7 +99,7 @@ const App: React.FC = () => {
         console.log('Citation data:', result);
         setCiteQueue(prev => [...prev, inputUrl.trim()]);
         setInputUrl('');
-        setSource({ type: result.type, data: {} });
+        setSource({ type: result.type, data: result.data });
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
       }
@@ -143,7 +143,10 @@ const App: React.FC = () => {
             error={error || undefined}
           />
           {source?.type === 'youtube' && source.data && (
-            <YouTubeResponseViewer data={source.data} />
+            <YouTubeResponseViewer 
+              data={source.data} 
+              url={inputUrl}
+            />
           )}
         </>
       )}

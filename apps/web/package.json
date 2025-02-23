@@ -1,27 +1,28 @@
 {
-"name": "@citation-manager/web",
-"version": "0.1.0",
-"private": true,
-"type": "module",
+  "name": "@citation-manager/web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@citation-manager/shared": "workspace:*",
+    "@stylexjs/stylex": "^0.3.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "@stylexjs/stylex": "^0.3.0",
-    "skip": "^0.0.13",
-    "@citation-manager/shared": "workspace:*"
+    "skip": "^0.0.13"
   },
-"devDependencies": {
-"@stylexjs/babel-plugin": "^0.3.0",
-"@babel/core": "^7.23.7",
-"@types/react": "^18.2.48",
-"@types/react-dom": "^18.2.18",
-"@vitejs/plugin-react": "^4.2.1",
+  "devDependencies": {
+    "@babel/core": "^7.23.7",
+    "@stylexjs/babel-plugin": "^0.3.0",
+    "@types/react": "^18.2.48",
+    "@types/react-dom": "^18.2.18",
+    "@vitejs/plugin-react": "^4.2.1",
     "typescript": "^5.3.3",
-    "vite": "^5.0.12"
+    "vite": "^5.0.12",
+    "vite-plugin-stylex": "^0.13.0"
   }
 }

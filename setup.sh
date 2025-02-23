@@ -55,6 +55,7 @@ cat > packages/backend/citation-service/package.json << EOL
   "dependencies": {
     "@prisma/client": "^6.4.1",
     "fastify": "^4.25.2",
+    "@fastify/cors": "^10.0.2",
     "zod": "^3.22.4",
     "prisma": "^6.4.1"
   },
@@ -240,6 +241,7 @@ EOL
 cat > apps/web/vite.config.ts << EOL
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import styleX from 'vite-plugin-stylex'
 
 export default defineConfig({
   plugins: [
