@@ -141,7 +141,7 @@ export const YouTubeResponseViewer = ({ data, url }: { data: YouTubeData; url: s
         {formatDate(mappedData.publishedTime)}.{' '}
         <a 
           {...stylex.props(styles.citationLink)} 
-          href={url}
+          href={mappedData.source.url}
           target="_blank" 
           rel="noopener noreferrer"
         >

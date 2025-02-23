@@ -85,7 +85,7 @@ const App: React.FC = () => {
   console.log('App component rendering');
   const [citeQueue, setCiteQueue] = React.useState<string[]>([]);
   const [inputUrl, setInputUrl] = React.useState('');
-  const [source, setSource] = React.useState<{ type: string; data?: any } | null>(null);
+  const [source, setSource] = React.useState<{ type: string; data?: any; url?: string } | null>(null);
   const [error, setError] = React.useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -99,7 +99,7 @@ const App: React.FC = () => {
         console.log('Citation data:', result);
         setCiteQueue(prev => [...prev, inputUrl.trim()]);
         setInputUrl('');
-        setSource({ type: result.type, data: result.data });
+        setSource({ type: result.type, data: result.data, url: inputUrl.trim() });
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
       }
@@ -145,7 +145,7 @@ const App: React.FC = () => {
           {source?.type === 'youtube' && source.data && (
             <YouTubeResponseViewer 
               data={source.data} 
-              url={inputUrl}
+              url={source.url || ''}
             />
           )}
         </>
