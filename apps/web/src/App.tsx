@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as stylex from '@stylexjs/stylex';
 import { observeUrl } from '@citation-manager/shared/utils/url-observer';
+import { ResponseViewer } from './components/ResponseViewer';
 
 const styles = stylex.create({
   container: {
@@ -83,20 +84,23 @@ const App: React.FC = () => {
   console.log('App component rendering');
   const [citeQueue, setCiteQueue] = React.useState<string[]>([]);
   const [inputUrl, setInputUrl] = React.useState('');
+  const [responseData, setResponseData] = React.useState<{ type: string; data: any } | null>(null);
   const [error, setError] = React.useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    setResponseData(null);
+
     if (inputUrl.trim()) {
       try {
         const result = await observeUrl(inputUrl.trim());
         console.log('Citation data:', result);
         setCiteQueue(prev => [...prev, inputUrl.trim()]);
         setInputUrl('');
-        setError(null);
+        setResponseData(result);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error');
-        setTimeout(() => setError(null), 3000);
+        setError(err instanceof Error ? err.message : 'An error occurred');
       }
     }
   };
@@ -130,10 +134,12 @@ const App: React.FC = () => {
           </ul>
         </div>
       )}
-      {error && (
-        <div {...stylex.props(styles.toast)}>
-          {error}
-        </div>
+      {(responseData || error) && (
+        <ResponseViewer 
+          type={responseData?.type || 'unsupported'}
+          data={responseData?.data}
+          error={error || undefined}
+        />
       )}
     </div>
   );
