@@ -28,9 +28,9 @@ then
     1. Start the PostgreSQL database
     `docker-compose up -d postgres`
     2. Generate the Prisma client
-    `pnpm db:generate`
+    `pnpm primsa:generate`
     3. Run database migrations
-    `pnpm db:migrate`
+    `pnpm prisma:migrate`
 
 ### Running the Application
 Run just the web app: 

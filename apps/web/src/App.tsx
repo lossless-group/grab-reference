@@ -2,6 +2,7 @@ import * as React from 'react';
 import * as stylex from '@stylexjs/stylex';
 import { observeUrl } from '@citation-manager/shared/utils/url-observer';
 import { ResponseViewer } from './components/ResponseViewer';
+import { YouTubeResponseViewer } from './components/YouTubeResponseViewer';
 
 const styles = stylex.create({
   container: {
@@ -84,13 +85,13 @@ const App: React.FC = () => {
   console.log('App component rendering');
   const [citeQueue, setCiteQueue] = React.useState<string[]>([]);
   const [inputUrl, setInputUrl] = React.useState('');
-  const [responseData, setResponseData] = React.useState<{ type: string; data: any } | null>(null);
+  const [source, setSource] = React.useState<{ type: string; data?: any } | null>(null);
   const [error, setError] = React.useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    setResponseData(null);
+    setSource(null);
 
     if (inputUrl.trim()) {
       try {
@@ -98,7 +99,7 @@ const App: React.FC = () => {
         console.log('Citation data:', result);
         setCiteQueue(prev => [...prev, inputUrl.trim()]);
         setInputUrl('');
-        setResponseData(result);
+        setSource({ type: result.type, data: {} });
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
       }
@@ -134,12 +135,17 @@ const App: React.FC = () => {
           </ul>
         </div>
       )}
-      {(responseData || error) && (
-        <ResponseViewer 
-          type={responseData?.type || 'unsupported'}
-          data={responseData?.data}
-          error={error || undefined}
-        />
+      {(source || error) && (
+        <>
+          <ResponseViewer 
+            type={source?.type as 'youtube' | 'google-books' | 'unsupported'}
+            data={source?.data}
+            error={error || undefined}
+          />
+          {source?.type === 'youtube' && source.data && (
+            <YouTubeResponseViewer data={source.data} />
+          )}
+        </>
       )}
     </div>
   );

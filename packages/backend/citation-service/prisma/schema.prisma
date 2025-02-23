@@ -25,7 +25,8 @@ publishedTime DateTime?
 publishedYear Int?
 publishedMonth Int? @db.SmallInt
 publishedDay Int? @db.SmallInt
-publishedOn String? @default(dbgenerated("CASE WHEN \"publishedTime\" IS NOT NULL THEN to_char(\"publishedTime\", 'YYYY-MM-DD') WHEN \"publishedYear\" IS NOT NULL AND \"publishedMonth\" IS NOT NULL AND \"publishedDay\" IS NOT NULL THEN concat(\"publishedYear\"::text, '-', LPAD(\"publishedMonth\"::text, 2, '0'), '-', LPAD(\"publishedDay\"::text, 2, '0')) ELSE NULL END"))
+publishedOn String?
+responseDescription String?
 }
 
 model Author {
