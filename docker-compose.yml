@@ -1,46 +1,37 @@
+version: '3.8'
 services:
   web:
     build:
       context: .
-      dockerfile: docker/web.Dockerfile
+      dockerfile: apps/web/Dockerfile
     ports:
-      - "3000:3000"
+      - "5173:5173"
     volumes:
       - .:/app
       - /app/node_modules
-    command: pnpm dev
-    environment:
-      - NODE_ENV=development
-      - VITE_YOUTUBE_API_KEY=${YOUTUBE_API_KEY}
-      - VITE_GOOGLE_BOOKS_API_KEY=${GOOGLE_BOOKS_API_KEY}
+    depends_on:
+      - citation-service
 
   citation-service:
     build:
       context: .
-      dockerfile: packages/backend/citation-service/citation-service.Dockerfile
+      dockerfile: packages/backend/citation-service/Dockerfile
     ports:
       - "8080:8080"
-    environment:
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/citation_db
-      - YOUTUBE_API_KEY=${YOUTUBE_API_KEY}
-      - GOOGLE_BOOKS_API_KEY=${GOOGLE_BOOKS_API_KEY}
+    volumes:
+      - .:/app
+      - /app/node_modules
     depends_on:
       - postgres
-    command: sh -c "pnpm prisma:migrate && pnpm start"
 
   postgres:
-    image: postgres:15-alpine
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: citation_db
     ports:
       - "5432:5432"
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=citation_db
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
     volumes:
       - postgres_data:/var/lib/postgresql/data
 

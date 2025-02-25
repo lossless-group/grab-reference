@@ -69,10 +69,12 @@ const styles = stylex.create({
 });
 
 interface YouTubeData {
+  etag: string;
   title: string;
   publishedAt: string;
   channelTitle: string;
   description: string;
+  uniqueEmbedId: string;
 }
 
 interface MappedCitation {
@@ -83,6 +85,7 @@ interface MappedCitation {
     referredToAs: string;
     type: string;
     url: string;
+    etag: string;
   };
 }
 
@@ -108,7 +111,8 @@ export const YouTubeResponseViewer = ({ data, url }: { data: YouTubeData; url: s
     source: {
       referredToAs: data.channelTitle,
       type: 'youtube',
-      url
+      url: url,
+      etag: data.etag,
     }
   };
 
@@ -136,9 +140,9 @@ export const YouTubeResponseViewer = ({ data, url }: { data: YouTubeData; url: s
   };
 
   return (
-    <div {...stylex.props(styles.container)}>
-      <div {...stylex.props(styles.citationLine)}>
-        {formatDate(mappedData.publishedTime)}.{' '}
+      <div {...stylex.props(styles.container)}>
+        <div {...stylex.props(styles.citationLine)}>
+          {formatDate(mappedData.publishedTime)}.{' '}
         <a 
           {...stylex.props(styles.citationLink)} 
           href={mappedData.source.url}
@@ -149,30 +153,51 @@ export const YouTubeResponseViewer = ({ data, url }: { data: YouTubeData; url: s
         </a>
         . {mappedData.source.referredToAs}.
       </div>
+      <div {...stylex.props(styles.container)}>
+        <h3 {...stylex.props(styles.title)}>Youtube HTML</h3>
+            <pre>
+            <code>
+              {`\`\`\`html
+<iframe 
+  style="aspect-ratio:16/9;width:100%;height:auto" 
+  src="https://www.youtube.com/embed/${data.uniqueEmbedId}" 
+  title="YouTube video player" 
+  frameborder="0" 
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+  referrerpolicy="strict-origin-when-cross-origin" 
+  allowfullscreen
+></iframe>
+\`\`\``}
+            </code>
+            </pre>
+      </div>
+      <div {...stylex.props(styles.container)}>
       <h3 {...stylex.props(styles.title)}>Mapped Citation Data:</h3>
-      <div {...stylex.props(styles.field)}>
-        <span {...stylex.props(styles.label)}>Citation.title: </span>
-        {mappedData.title}
-      </div>
-      <div {...stylex.props(styles.field)}>
-        <span {...stylex.props(styles.label)}>Citation.publishedTime: </span>
-        {mappedData.publishedTime.toISOString()}
-      </div>
-      <div {...stylex.props(styles.field)}>
-        <span {...stylex.props(styles.label)}>Citation.responseDescription: </span>
-        {mappedData.responseDescription}
-      </div>
-      <div {...stylex.props(styles.field)}>
-        <span {...stylex.props(styles.label)}>Source.referredToAs: </span>
-        {mappedData.source.referredToAs}
-      </div>
-      <div {...stylex.props(styles.buttonContainer)}>
-        <button 
-          {...stylex.props(styles.saveButton)} 
-          onClick={handleSave}
-        >
-          Save Citation
-        </button>
+            <p>{mappedData.source.url}</p>
+          <div {...stylex.props(styles.field)}>
+            <span {...stylex.props(styles.label)}>Citation.title: </span>
+            {mappedData.title}
+          </div>
+          <div {...stylex.props(styles.field)}>
+            <span {...stylex.props(styles.label)}>Citation.publishedTime: </span>
+            {mappedData.publishedTime.toISOString()}
+          </div>
+          <div {...stylex.props(styles.field)}>
+            <span {...stylex.props(styles.label)}>Citation.responseDescription: </span>
+            {mappedData.responseDescription}
+          </div>
+          <div {...stylex.props(styles.field)}>
+            <span {...stylex.props(styles.label)}>Source.referredToAs: </span>
+            {mappedData.source.referredToAs}
+          </div>
+          <div {...stylex.props(styles.buttonContainer)}>
+            <button 
+              {...stylex.props(styles.saveButton)} 
+              onClick={handleSave}
+            >
+              Save Citation
+            </button>
+          </div>
       </div>
       {saveStatus && (
         <p {...stylex.props(

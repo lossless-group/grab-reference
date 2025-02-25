@@ -16,15 +16,17 @@ if (!YOUTUBE_API_KEY) {
 console.log('API Key length:', YOUTUBE_API_KEY.length);
 
 interface YouTubeData {
+  etag: string;
   title: string;
   publishedAt: string;
   channelTitle: string;
   description: string;
+  uniqueEmbedId: string;
 }
 
 export const fetchYouTubeData = async (url: string): Promise<YouTubeData> => {
   try {
-    const videoId = extractVideoId(url);
+    const { videoId, uniqueEmbedId } = extractVideoIdAndEmbed(url);
     if (!videoId) {
       throw new Error('Invalid YouTube URL - Could not extract video ID');
     }
@@ -52,10 +54,12 @@ export const fetchYouTubeData = async (url: string): Promise<YouTubeData> => {
 
     const videoInfo = data.items[0].snippet;
     return {
+      etag: data.etag,
       title: videoInfo.title,
       publishedAt: videoInfo.publishedAt,
       channelTitle: videoInfo.channelTitle,
-      description: videoInfo.description
+      description: videoInfo.description,
+      uniqueEmbedId: uniqueEmbedId
     };
   } catch (error) {
     console.error('Error fetching YouTube data:', error);
@@ -66,23 +70,61 @@ export const fetchYouTubeData = async (url: string): Promise<YouTubeData> => {
   }
 };
 
-const extractVideoId = (url: string): string => {
+interface VideoIdResult {
+  videoId: string;
+  uniqueEmbedId: string;
+}
+
+const extractVideoIdAndEmbed = (url: string): VideoIdResult => {
   try {
-    // Try the URL object method first
     const urlObj = new URL(url);
+    
+    // Handle youtu.be share URLs
     if (urlObj.hostname.includes('youtu.be')) {
-      return urlObj.pathname.slice(1);
+      const uniqueEmbedId = urlObj.pathname.slice(1) + urlObj.search;
+      console.log('Extracted ID with params:', uniqueEmbedId);
+      return {
+        videoId: urlObj.pathname.slice(1),
+        uniqueEmbedId: uniqueEmbedId
+      };
     }
+    
+    // Handle regular youtube.com URLs
     const paramId = urlObj.searchParams.get('v');
-    if (paramId) return paramId;
+    if (paramId) {
+      return {
+        videoId: paramId,
+        uniqueEmbedId: 'Not a share link'
+      };
+    }
+
+    // Handle youtube.com/shorts URLs
+    if (urlObj.pathname.includes('/shorts/')) {
+      const shortId = urlObj.pathname.split('/shorts/')[1];
+      return {
+        videoId: shortId,
+        uniqueEmbedId: 'Not a share link'
+      };
+    }
 
     // Fallback to regex method
     const regexMatch = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/)?.[1];
-    if (regexMatch) return regexMatch;
+    if (regexMatch) {
+      return {
+        videoId: regexMatch,
+        uniqueEmbedId: 'Not a share link'
+      };
+    }
 
-    return '';
+    return {
+      videoId: '',
+      uniqueEmbedId: 'Not a share link'
+    };
   } catch (error) {
     console.error('Error extracting video ID:', error);
-    return '';
+    return {
+      videoId: '',
+      uniqueEmbedId: 'Not a share link'
+    };
   }
 };

@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@citation-manager/shared": "workspace:*",
-    "@stylexjs/stylex": "^0.3.0",
+    "@stylexjs/stylex": "^0.9.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "skip": "^0.0.13"

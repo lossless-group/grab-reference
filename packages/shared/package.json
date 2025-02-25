@@ -1,22 +1,23 @@
 {
-"name": "@citation-manager/shared",
-"version": "0.1.0",
-"description": "Shared utilities for citation manager",
-"type": "module",
-"main": "dist/index.js",
-"types": "dist/index.d.ts",
-"scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
-    "clean": "rm -rf dist"
-},
-"files": [
-    "dist"
-],
-"devDependencies": {
-    "typescript": "^5.0.0",
-    "@types/node": "^20.0.0",
-    "tslib": "^2.6.0"
+    "name": "@citation-manager/shared",
+    "version": "0.1.0",
+    "description": "Shared utilities for citation manager",
+    "type": "module",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsc --watch",
+        "clean": "rm -rf dist"
+    },
+    "files": [
+        "dist"
+    ],
+    "devDependencies": {
+        "@types/node": "^20.0.0",
+        "tslib": "^2.6.0",
+        "typescript": "^5.0.0",
+        "vite": "^5.0.12",
+        "vite-plugin-stylex": "^0.13.0"
+    }
 }
-}
-

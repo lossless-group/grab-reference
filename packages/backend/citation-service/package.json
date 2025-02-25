@@ -3,11 +3,11 @@
     "version": "0.1.0",
     "private": true,
     "type": "module",
-    "main": "./dist/index.js",
+    "main": "dist/index.js",
     "scripts": {
         "dev": "tsx watch src/index.ts",
-        "build": "tsc -p tsconfig.json",
-        "start": "node --enable-source-maps ./dist/index.js",
+        "build": "tsc",
+        "start": "node dist/index.js",
         "prisma:generate": "prisma generate",
         "prisma:migrate": "prisma migrate deploy",
         "prebuild": "pnpm prisma:generate",
@@ -15,7 +15,7 @@
         "prepare": "pnpm prisma:generate"
     },
     "dependencies": {
-        "@fastify/cors": "^10.0.2",
+        "@fastify/cors": "^8.5.0",
         "@prisma/client": "^6.4.1",
         "fastify": "^4.25.2",
         "zod": "^3.22.4"
