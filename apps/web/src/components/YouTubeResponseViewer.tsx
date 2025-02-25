@@ -65,6 +65,39 @@ const styles = stylex.create({
     ':hover': {
       textDecoration: 'underline'
     }
+  },
+  codeContainer: {
+    overflow: 'auto',
+    maxWidth: '100%'
+  },
+  codeWrapper: {
+    position: 'relative',
+    width: '100%'
+  },
+  pre: {
+    margin: 0,
+    wordWrap: 'break-word',
+    whiteSpace: 'pre-wrap',
+    overflowWrap: 'break-word'
+  },
+  code: {
+    display: 'block',
+    fontFamily: 'monospace',
+    fontSize: '0.9rem'
+  },
+  copyButton: {
+    position: 'absolute',
+    top: '8px',
+    right: '8px',
+    padding: '4px 8px',
+    backgroundColor: '#e5e7eb',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    fontSize: '0.875rem',
+    ':hover': {
+      backgroundColor: '#d1d5db'
+    }
   }
 });
 
@@ -139,6 +172,16 @@ export const YouTubeResponseViewer = ({ data, url }: { data: YouTubeData; url: s
     }
   };
 
+  const iframeCode = `<iframe 
+  style="aspect-ratio:16/9;width:100%;height:auto" 
+  src="https://www.youtube.com/embed/${data.uniqueEmbedId}" 
+  title="YouTube video player" 
+  frameborder="0" 
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+  referrerpolicy="strict-origin-when-cross-origin" 
+  allowfullscreen
+></iframe>`;
+
   return (
       <div {...stylex.props(styles.container)}>
         <div {...stylex.props(styles.citationLine)}>
@@ -155,21 +198,25 @@ export const YouTubeResponseViewer = ({ data, url }: { data: YouTubeData; url: s
       </div>
       <div {...stylex.props(styles.container)}>
         <h3 {...stylex.props(styles.title)}>Youtube HTML</h3>
-            <pre>
-            <code>
-              {`\`\`\`html
-<iframe 
-  style="aspect-ratio:16/9;width:100%;height:auto" 
-  src="https://www.youtube.com/embed/${data.uniqueEmbedId}" 
-  title="YouTube video player" 
-  frameborder="0" 
-  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-  referrerpolicy="strict-origin-when-cross-origin" 
-  allowfullscreen
-></iframe>
+        <div {...stylex.props(styles.codeWrapper)}>
+          <button 
+            {...stylex.props(styles.copyButton)}
+            onClick={() => {
+              navigator.clipboard.writeText(iframeCode);
+            }}
+          >
+            Copy
+          </button>
+          <div {...stylex.props(styles.codeContainer)}>
+              <pre {...stylex.props(styles.pre)}>
+                <code {...stylex.props(styles.code)}>
+                  {`\`\`\`html
+${iframeCode}
 \`\`\``}
-            </code>
-            </pre>
+                </code>
+              </pre>
+          </div>
+        </div>
       </div>
       <div {...stylex.props(styles.container)}>
       <h3 {...stylex.props(styles.title)}>Mapped Citation Data:</h3>
