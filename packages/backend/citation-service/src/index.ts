@@ -1,26 +1,22 @@
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
-import prisma from './lib/prisma'
+import prisma from './lib/prisma.js'
+import { FastifyError } from '@fastify/error'
 
 const fastify = Fastify({
-  logger: true
+  logger: {
+    level: 'debug',
+    transport: {
+      target: 'pino-pretty'
+    }
+  }
 })
 
 // Register CORS
 await fastify.register(cors, {
-  origin: (origin, cb) => {
-    // Allow requests with no origin (like mobile apps, curl, etc)
-    if (!origin) return cb(null, true)
-    
-    // Allow localhost with any port
-    if (origin.startsWith('http://localhost:')) {
-      return cb(null, true)
-    }
-    
-    // Deny other origins
-    cb(new Error('Not allowed'), false)
-  },
-  methods: ['GET', 'POST', 'PUT', 'DELETE']
+  origin: true,  // Allow all origins in development
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
 })
 
 // Health check endpoint
@@ -40,7 +36,7 @@ fastify.get('/citations', async () => {
     })
     return citations
   } catch (error) {
-    fastify.log.error(error)
+    fastify.log.error(`Error fetching citations: ${error}`)
     throw error
   }
 })
@@ -82,15 +78,33 @@ fastify.post('/citations', async (request, reply) => {
 // Start server
 const start = async (): Promise<void> => {
   try {
+    // Test database connection
+    await prisma.$connect()
+    console.log('Successfully connected to database')
+
+    // Register plugins
+    await fastify.register(cors, {
+      origin: (origin, cb) => {
+        if (!origin || origin.startsWith('http://localhost:')) {
+          return cb(null, true)
+        }
+        cb(new Error('Not allowed'), false)
+      }
+    })
+
+    // Start server
     await fastify.listen({ port: 8080, host: '0.0.0.0' })
+    console.log('Server started on port 8080')
   } catch (err) {
-    fastify.log.error(err)
+    console.error('Failed to start server:', err)
     process.exit(1)
   }
 }
 
 // Handle graceful shutdown
 process.on('SIGINT', async () => {
+  console.log('Shutting down...')
+  await prisma.$disconnect()
   await fastify.close()
   process.exit(0)
 })

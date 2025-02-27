@@ -12,8 +12,8 @@ peerDependencyRules:
     - react-dom
     - stylex
     - skip
-
 packageExtensions:
   '@stylexjs/stylex@*':
     peerDependencies:
-      react: '>=19.0.0'
+      react: '>=18.2.0'
+

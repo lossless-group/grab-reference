@@ -13,8 +13,8 @@ COPY apps/web/package.json ./apps/web/
 COPY packages/backend/*/package.json ./packages/backend/
 COPY packages/shared/*/package.json ./packages/shared/
 
-# Install dependencies
-RUN pnpm install --frozen-lockfile
+# Install dependencies (including dev dependencies)
+RUN pnpm install --frozen-lockfile --include-dev
 
 # Copy source code
 COPY . .

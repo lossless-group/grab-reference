@@ -32,6 +32,10 @@ then
     3. Run database migrations
     `pnpm prisma:migrate`
 
+4. Set up the web app:
+`docker-compose build web`
+`docker-compose up -d web`
+
 ### Running the Application
 Run just the web app: 
 `pnpm dev:web`
@@ -40,5 +44,15 @@ Run just the API:
 
 Start both frontend and backend:
 `pnpm dev`
+
+### Run from Docker
+# Remove all containers and their volumes
+``docker-compose down -v`
+
+# Build fresh without using cache
+`docker-compose build --no-cache`
+
+# Start the services
+`docker-compose up`
 
 The "Hello World" React app should be visible at http://localhost:3000. Let me know if you still can't access it!

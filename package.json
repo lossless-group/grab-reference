@@ -12,7 +12,10 @@
     "db:generate": "pnpm --filter @citation-manager/citation-service prisma:generate",
     "db:migrate": "pnpm --filter @citation-manager/citation-service prisma:migrate",
     "docker:build": "docker build -t citation-manager .",
-    "docker:run": "docker run -p 3000:3000 -p 8080:8080 citation-manager"
+    "docker:run": "docker run -p 3000:3000 -p 8080:8080 citation-manager",
+    "start:web": "pnpm --filter @citation-manager/web start",
+    "start:api": "pnpm --filter @citation-manager/citation-service start",
+    "start": "pnpm -r --parallel start"
   },
   "devDependencies": {
     "eslint": "^8.56.0",
