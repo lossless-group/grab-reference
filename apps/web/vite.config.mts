@@ -3,17 +3,21 @@ import react from '@vitejs/plugin-react';
 import styleX from '@stylexjs/rollup-plugin';
 
 export default defineConfig({
-plugins: [
-    react(),
-    styleX({
-    // StyleX options
-    dev: process.env.NODE_ENV === 'development',
+  plugins: [react(), styleX({
+    dev: true,
     runtimeInjection: true,
-    assumeProductionMode: process.env.NODE_ENV === 'production',
-    })
-],
-server: {
-    port: 3000
-}
+    styleResolution: 'application-order'
+  })],
+  server: {
+    port: 5173,
+    host: true,
+    watch: {
+      usePolling: true
+    }
+  },
+  preview: {
+    port: 5173,
+    host: true
+  }
 });
 

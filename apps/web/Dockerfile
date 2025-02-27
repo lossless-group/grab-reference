@@ -5,16 +5,29 @@ RUN npm install -g pnpm
 
 WORKDIR /app
 
-# Copy package files
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+# Copy all package files first
+COPY pnpm-*.yaml ./
+COPY package.json ./
 COPY apps/web/package.json ./apps/web/
 COPY packages/shared/package.json ./packages/shared/
 
-# Install dependencies
+# Install all dependencies at workspace root
 RUN pnpm install
 
-# Copy source code
+# Explicitly install vite and plugins in web directory
+RUN cd apps/web && pnpm install --include=dev
+
+# Copy the rest of the code
 COPY . .
 
-# Build and start
-CMD ["pnpm", "--filter", "@citation-manager/web", "dev", "--host"] 
+# Build shared packages first
+RUN pnpm --filter "@citation-manager/shared" build
+
+# Build the web application
+RUN cd apps/web && pnpm build
+
+# Set working directory to web app
+WORKDIR /app/apps/web
+
+# Start production server
+CMD ["pnpm", "start"] 

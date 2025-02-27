@@ -172,6 +172,8 @@ export const YouTubeResponseViewer = ({ data, url }: { data: YouTubeData; url: s
     }
   };
 
+  const citeMarkdown = `[^1]`
+
   const iframeCode = `<iframe 
   style="aspect-ratio:16/9;width:100%;height:auto" 
   src="https://www.youtube.com/embed/${data.uniqueEmbedId}" 
@@ -183,18 +185,20 @@ export const YouTubeResponseViewer = ({ data, url }: { data: YouTubeData; url: s
 ></iframe>`;
 
   return (
-      <div {...stylex.props(styles.container)}>
-        <div {...stylex.props(styles.citationLine)}>
-          {formatDate(mappedData.publishedTime)}.{' '}
-        <a 
-          {...stylex.props(styles.citationLink)} 
-          href={mappedData.source.url}
-          target="_blank" 
-          rel="noopener noreferrer"
-        >
-          {mappedData.title}
-        </a>
-        . {mappedData.source.referredToAs}.
+    <div {...stylex.props(styles.container)}>
+      <div {...stylex.props(styles.citationLine)}>
+        <p>
+          {citeMarkdown + ': ' + formatDate(mappedData.publishedTime)}.{' '}
+          <a 
+            {...stylex.props(styles.citationLink)} 
+            href={mappedData.source.url}
+            target="_blank" 
+            rel="noopener noreferrer"
+          >
+            {mappedData.title}
+          </a>
+          . {mappedData.source.referredToAs}.
+        </p>
       </div>
       <div {...stylex.props(styles.container)}>
         <h3 {...stylex.props(styles.title)}>Youtube HTML</h3>
@@ -208,43 +212,41 @@ export const YouTubeResponseViewer = ({ data, url }: { data: YouTubeData; url: s
             Copy
           </button>
           <div {...stylex.props(styles.codeContainer)}>
-              <pre {...stylex.props(styles.pre)}>
-                <code {...stylex.props(styles.code)}>
-                  {`\`\`\`html
-${iframeCode}
-\`\`\``}
-                </code>
-              </pre>
+            <pre {...stylex.props(styles.pre)}>
+              <code {...stylex.props(styles.code)}>
+                {`\`\`\`html\n${iframeCode}\n\`\`\``}
+              </code>
+            </pre>
           </div>
         </div>
       </div>
       <div {...stylex.props(styles.container)}>
-      <h3 {...stylex.props(styles.title)}>Mapped Citation Data:</h3>
-            <p>{mappedData.source.url}</p>
-          <div {...stylex.props(styles.field)}>
-            <span {...stylex.props(styles.label)}>Citation.title: </span>
-            {mappedData.title}
-          </div>
-          <div {...stylex.props(styles.field)}>
-            <span {...stylex.props(styles.label)}>Citation.publishedTime: </span>
-            {mappedData.publishedTime.toISOString()}
-          </div>
-          <div {...stylex.props(styles.field)}>
-            <span {...stylex.props(styles.label)}>Citation.responseDescription: </span>
-            {mappedData.responseDescription}
-          </div>
-          <div {...stylex.props(styles.field)}>
-            <span {...stylex.props(styles.label)}>Source.referredToAs: </span>
-            {mappedData.source.referredToAs}
-          </div>
-          <div {...stylex.props(styles.buttonContainer)}>
-            <button 
-              {...stylex.props(styles.saveButton)} 
-              onClick={handleSave}
-            >
-              Save Citation
-            </button>
-          </div>
+        <h3 {...stylex.props(styles.title)}>Mapped Citation Data:</h3>
+        <p>{mappedData.source.url}</p>
+        <div {...stylex.props(styles.field)}>
+          <span {...stylex.props(styles.label)}>Citation.title: </span>
+          {mappedData.title}
+        </div>
+        <div {...stylex.props(styles.field)}>
+          <span {...stylex.props(styles.label)}>Citation.publishedTime: </span>
+          {mappedData.publishedTime.toISOString()}
+        </div>
+        <div {...stylex.props(styles.field)}>
+          <span {...stylex.props(styles.label)}>Citation.responseDescription: </span>
+          {mappedData.responseDescription}
+        </div>
+        <div {...stylex.props(styles.field)}>
+          <span {...stylex.props(styles.label)}>Source.referredToAs: </span>
+          {mappedData.source.referredToAs}
+        </div>
+        <div {...stylex.props(styles.buttonContainer)}>
+          <button 
+            {...stylex.props(styles.saveButton)} 
+            onClick={handleSave}
+          >
+            Save Citation
+          </button>
+        </div>
       </div>
       {saveStatus && (
         <p {...stylex.props(

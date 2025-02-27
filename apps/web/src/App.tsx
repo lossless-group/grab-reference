@@ -1,10 +1,11 @@
 import * as React from 'react';
-import * as stylex from '@stylexjs/stylex';
+import { create, props } from '@stylexjs/stylex';
 import { observeUrl } from '@citation-manager/shared/utils/url-observer';
 import { ResponseViewer } from './components/ResponseViewer';
 import { YouTubeResponseViewer } from './components/YouTubeResponseViewer';
+import { useState, useEffect } from 'react';
 
-const styles = stylex.create({
+const styles = create({
   container: {
     display: 'flex',
     flexDirection: 'column',
@@ -83,10 +84,13 @@ const styles = stylex.create({
 
 const App: React.FC = () => {
   console.log('App component rendering');
+
   const [citeQueue, setCiteQueue] = React.useState<string[]>([]);
   const [inputUrl, setInputUrl] = React.useState('');
   const [source, setSource] = React.useState<{ type: string; data?: any; url?: string } | null>(null);
   const [error, setError] = React.useState<string | null>(null);
+  const [citations, setCitations] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,29 +110,55 @@ const App: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    console.log('Fetching citations...');
+    fetch('http://localhost:8080/citations')
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then(data => {
+        console.log('Citations data:', data);
+        setCitations(data || []);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Error fetching citations:', err);
+        setCitations([]);
+        setError('Failed to load citations');
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+
   return (
-    <div {...stylex.props(styles.container)}>
+    <div {...props(styles.container)}>
+      <div style={{ padding: '20px', backgroundColor: 'red' }}>Test Content</div>
       <h1>Citation Manager</h1>
-      <h1 {...stylex.props(styles.text)}>Grab a citation</h1>
-      <form {...stylex.props(styles.form)} onSubmit={handleSubmit}>
+      <h1 {...props(styles.text)}>Grab a citation</h1>
+      <form {...props(styles.form)} onSubmit={handleSubmit}>
         <input
-          {...stylex.props(styles.input)}
+          {...props(styles.input)}
           type="url"
           placeholder="Enter URL"
           required
           value={inputUrl}
           onChange={(e) => setInputUrl(e.target.value)}
         />
-        <button {...stylex.props(styles.button)} type="submit">
+        <button {...props(styles.button)} type="submit">
           Get Citation
         </button>
       </form>
       
       {citeQueue.length > 0 && (
-        <div {...stylex.props(styles.queueContainer)}>
-          <ul {...stylex.props(styles.queueList)}>
+        <div {...props(styles.queueContainer)}>
+          <ul {...props(styles.queueList)}>
             {[...citeQueue].reverse().map((url, index) => (
-              <li key={index} {...stylex.props(styles.queueItem)}>
+              <li key={index} {...props(styles.queueItem)}>
                 {url}
               </li>
             ))}
@@ -150,6 +180,8 @@ const App: React.FC = () => {
           )}
         </>
       )}
+      <h1>Citations</h1>
+      <pre>{JSON.stringify(citations, null, 2)}</pre>
     </div>
   );
 };

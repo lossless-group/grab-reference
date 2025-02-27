@@ -1,6 +1,6 @@
-import * as stylex from '@stylexjs/stylex';
+import { create, props } from '@stylexjs/stylex';
 
-const styles = stylex.create({
+const styles = create({
   container: {
     marginTop: '1rem',
     padding: '1rem',
@@ -39,17 +39,15 @@ const styles = stylex.create({
   }
 });
 
-interface ResponseViewerProps {
+export const ResponseViewer: React.FC<{
   type: 'youtube' | 'google-books' | 'unsupported';
-  data: any;
+  data?: any;
   error?: string;
-}
-
-export const ResponseViewer = ({ type, data, error }: ResponseViewerProps) => {
+}> = ({ type, data, error }) => {
   if (error) {
     return (
-      <div {...stylex.props(styles.errorContainer)}>
-        <p {...stylex.props(styles.errorText)}>{error}</p>
+      <div {...props(styles.errorContainer)}>
+        <p {...props(styles.errorText)}>{error}</p>
       </div>
     );
   }
@@ -59,9 +57,9 @@ export const ResponseViewer = ({ type, data, error }: ResponseViewerProps) => {
   }
 
   return (
-    <div {...stylex.props(styles.container)}>
-      <h2 {...stylex.props(styles.title)}>{type} Data:</h2>
-      <pre {...stylex.props(styles.pre)}>
+    <div {...props(styles.container)}>
+      <h2 {...props(styles.title)}>{type} Data:</h2>
+      <pre {...props(styles.pre)}>
         {JSON.stringify(data, null, 2)}
       </pre>
     </div>
