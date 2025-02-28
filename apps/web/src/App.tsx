@@ -112,7 +112,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     console.log('Fetching citations...');
-    fetch('http://localhost:8080/citations')
+    fetch('/api/citations')
       .then(res => {
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);

@@ -1,5 +1,6 @@
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
+import stylex from 'vite-plugin-stylex'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -8,17 +9,8 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [
-      react({
-        babel: {
-          plugins: [
-            ['@stylexjs/babel-plugin', {
-              dev: true,
-              runtime: true,
-              styleResolution: 'application-order'
-            }]
-          ]
-        }
-      })
+      react(),
+      stylex()
     ],
     build: {
       outDir: 'dist',
@@ -28,6 +20,9 @@ export default defineConfig(({ mode }) => {
     server: {
       port: PORT,
       host: true,
+      watch: {
+        usePolling: true
+      },
       proxy: {
         '/api': {
           target: 'http://localhost:8080',

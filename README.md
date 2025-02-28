@@ -22,6 +22,9 @@ then
 2. Install dependencies:
 `pnpm install`
 
+If it's not letting you install some packages, like Prisma, run
+`pnpm approve-builds`
+
 
 3. Set up the database:
 
@@ -56,3 +59,6 @@ Start both frontend and backend:
 `docker-compose up`
 
 The "Hello World" React app should be visible at http://localhost:3000. Let me know if you still can't access it!
+
+### if you need to remove node_modules and start over:
+`pnpm -r exec -- rm -rf node_modules`

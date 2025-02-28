@@ -1,7 +1,7 @@
-import * as stylex from '@stylexjs/stylex';
+import { create, props } from '@stylexjs/stylex';
 import * as React from 'react';
 
-const styles = stylex.create({
+const styles = create({
   container: {
     marginTop: '1rem',
     padding: '1rem',
@@ -185,12 +185,12 @@ export const YouTubeResponseViewer = ({ data, url }: { data: YouTubeData; url: s
 ></iframe>`;
 
   return (
-    <div {...stylex.props(styles.container)}>
-      <div {...stylex.props(styles.citationLine)}>
+    <div {...props(styles.container)}>
+      <div {...props(styles.citationLine)}>
         <p>
           {citeMarkdown + ': ' + formatDate(mappedData.publishedTime)}.{' '}
           <a 
-            {...stylex.props(styles.citationLink)} 
+            {...props(styles.citationLink)} 
             href={mappedData.source.url}
             target="_blank" 
             rel="noopener noreferrer"
@@ -200,48 +200,48 @@ export const YouTubeResponseViewer = ({ data, url }: { data: YouTubeData; url: s
           . {mappedData.source.referredToAs}.
         </p>
       </div>
-      <div {...stylex.props(styles.container)}>
-        <h3 {...stylex.props(styles.title)}>Youtube HTML</h3>
-        <div {...stylex.props(styles.codeWrapper)}>
+      <div {...props(styles.container)}>
+        <h3 {...props(styles.title)}>Youtube HTML</h3>
+        <div {...props(styles.codeWrapper)}>
           <button 
-            {...stylex.props(styles.copyButton)}
+            {...props(styles.copyButton)}
             onClick={() => {
               navigator.clipboard.writeText(iframeCode);
             }}
           >
             Copy
           </button>
-          <div {...stylex.props(styles.codeContainer)}>
-            <pre {...stylex.props(styles.pre)}>
-              <code {...stylex.props(styles.code)}>
+          <div {...props(styles.codeContainer)}>
+            <pre {...props(styles.pre)}>
+              <code {...props(styles.code)}>
                 {`\`\`\`html\n${iframeCode}\n\`\`\``}
               </code>
             </pre>
           </div>
         </div>
       </div>
-      <div {...stylex.props(styles.container)}>
-        <h3 {...stylex.props(styles.title)}>Mapped Citation Data:</h3>
+      <div {...props(styles.container)}>
+        <h3 {...props(styles.title)}>Mapped Citation Data:</h3>
         <p>{mappedData.source.url}</p>
-        <div {...stylex.props(styles.field)}>
-          <span {...stylex.props(styles.label)}>Citation.title: </span>
+        <div {...props(styles.field)}>
+          <span {...props(styles.label)}>Citation.title: </span>
           {mappedData.title}
         </div>
-        <div {...stylex.props(styles.field)}>
-          <span {...stylex.props(styles.label)}>Citation.publishedTime: </span>
+        <div {...props(styles.field)}>
+          <span {...props(styles.label)}>Citation.publishedTime: </span>
           {mappedData.publishedTime.toISOString()}
         </div>
-        <div {...stylex.props(styles.field)}>
-          <span {...stylex.props(styles.label)}>Citation.responseDescription: </span>
+        <div {...props(styles.field)}>
+          <span {...props(styles.label)}>Citation.responseDescription: </span>
           {mappedData.responseDescription}
         </div>
-        <div {...stylex.props(styles.field)}>
-          <span {...stylex.props(styles.label)}>Source.referredToAs: </span>
+        <div {...props(styles.field)}>
+          <span {...props(styles.label)}>Source.referredToAs: </span>
           {mappedData.source.referredToAs}
         </div>
-        <div {...stylex.props(styles.buttonContainer)}>
+        <div {...props(styles.buttonContainer)}>
           <button 
-            {...stylex.props(styles.saveButton)} 
+            {...props(styles.saveButton)} 
             onClick={handleSave}
           >
             Save Citation
@@ -249,7 +249,7 @@ export const YouTubeResponseViewer = ({ data, url }: { data: YouTubeData; url: s
         </div>
       </div>
       {saveStatus && (
-        <p {...stylex.props(
+        <p {...props(
           styles.saveStatus, 
           saveStatus.success ? styles.success : styles.error
         )}>

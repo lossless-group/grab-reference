@@ -6,6 +6,9 @@ RUN corepack enable && corepack prepare pnpm@latest --activate
 
 WORKDIR /app
 
+# Copy .npmrc file to allow Prisma builds
+COPY .npmrc ./
+
 # Copy workspace config and package files
 COPY pnpm-workspace.yaml ./
 COPY package.json ./
@@ -13,7 +16,7 @@ COPY apps/web/package.json ./apps/web/
 COPY packages/backend/*/package.json ./packages/backend/
 COPY packages/shared/*/package.json ./packages/shared/
 
-# Install dependencies (including dev dependencies)
+# Install dependencies with build scripts enabled
 RUN pnpm install --frozen-lockfile --include-dev
 
 # Copy source code

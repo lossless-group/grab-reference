@@ -6,6 +6,9 @@ RUN npm install -g pnpm
 
 WORKDIR /app
 
+# Copy .npmrc file to allow Prisma builds
+COPY .npmrc ./
+
 # Copy root package files
 COPY pnpm-workspace.yaml ./
 COPY pnpm-lock.yaml ./
@@ -16,12 +19,15 @@ COPY packages/backend/citation-service/package.json ./packages/backend/citation-
 COPY packages/backend/citation-service/prisma ./packages/backend/citation-service/prisma/
 COPY packages/backend/citation-service/.env ./packages/backend/citation-service/
 
-# Install dependencies
+# Install dependencies with Prisma build scripts enabled
 RUN pnpm install
 
 # Copy source code
 COPY packages/backend/citation-service/tsconfig.json ./packages/backend/citation-service/
 COPY packages/backend/citation-service/src ./packages/backend/citation-service/src/
+
+# Generate Prisma client explicitly
+RUN cd packages/backend/citation-service && pnpm prisma generate
 
 # Build
 WORKDIR /app/packages/backend/citation-service

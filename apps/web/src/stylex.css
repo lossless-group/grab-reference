@@ -1,0 +1,8 @@
+/* https://github.com/HorusGoul/vite-plugin-stylex?tab=readme-ov-file#including-stylex-styles-in-your-project */
+@stylex stylesheet;
+
+@stylex.global {
+  body {
+    background-color: #f0f0f0;
+  }
+}

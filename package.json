@@ -26,5 +26,26 @@
   "dependencies": {
     "@types/dotenv": "^8.2.3",
     "dotenv": "^16.4.7"
+  },
+  "pnpm": {
+    "overrides": {},
+    "peerDependencyRules": {
+      "allowedVersions": {
+        "react": "18"
+      }
+    },
+    "allowedDeprecatedDependencies": {},
+    "ignoredBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "esbuild",
+      "prisma"
+    ],
+    "onlyBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "esbuild",
+      "prisma"
+    ]
   }
 }
