@@ -19,10 +19,11 @@ model Citation {
   updatedAt DateTime @updatedAt
   title     String?
   url       String?
-  classifiers Classifier[]
-  authors   Author[]
+  classifiers Classifier[] @relation("CitationToClassifier")
+  authors   Author[] @relation("AuthorToCitation")
   source    Source?  @relation(fields: [sourceId], references: [id])
   sourceId  Int?
+  sourceReferredToAs String? // Denormalized copy of Source.referredToAs for performance
   publishedTime DateTime?
   publishedYear Int?
   publishedMonth Int? @db.SmallInt
@@ -39,7 +40,7 @@ model Author {
   surName   String?
   givenName String?
   fullName  String?
-  citations Citation[]
+  citations Citation[] @relation("AuthorToCitation")
   classifiers Classifier[] @relation("AuthorToClassifier")
 
   @@index([fullName])
@@ -51,11 +52,11 @@ model Source {
   uuid          String    @default(uuid())  
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  referredToAs  String?
+  referredToAs  String
   url           String?
   type          String?
   citations     Citation[]
-  classifiers   Classifier[]
+  classifiers   Classifier[] @relation("SourceToClassifier")
 
   // Self-referential relationships
   parentSources Source[]  @relation("SourceHierarchy")
@@ -74,8 +75,8 @@ model Classifier {
   updatedAt     DateTime  @updatedAt
   referredToAs  String    @unique
   aliases       String[]  // Array of alternative names for the classifier
-  citations     Citation[]
-  sources       Source[]
+  citations     Citation[] @relation("CitationToClassifier") 
+  sources       Source[]  @relation("SourceToClassifier")
   authors       Author[]  @relation("AuthorToClassifier")
 
   // Self-referential relationships

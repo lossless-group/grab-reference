@@ -7,11 +7,11 @@ set -e
 mkdir -p apps/web/src/components
 mkdir -p packages/{backend,shared}
 mkdir -p packages/backend/{citation-service,search-service}
-mkdir -p packages/shared/{types,utils,api-handlers}
+mkdir -p packages/shared/{types,utils,api-handlers,prisma}
 mkdir -p docker
 
-# Create Prisma schema first
-mkdir -p packages/backend/citation-service/prisma && cat > packages/backend/citation-service/prisma/schema.prisma << 'EOF'
+# Create Prisma schema in shared directory
+mkdir -p packages/shared/prisma && cat > packages/shared/prisma/schema.prisma << 'EOF'
 // This is your Prisma schema file
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
@@ -46,8 +46,9 @@ cat > packages/backend/citation-service/package.json << EOL
     "dev": "tsx watch src/index.ts",
     "build": "tsc -p tsconfig.json",
     "start": "node --enable-source-maps ./dist/index.js",
-    "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate deploy",
+    "prisma:generate": "prisma generate --schema=../../shared/prisma/schema.prisma",
+    "prisma:migrate": "prisma migrate deploy --schema=../../shared/prisma/schema.prisma",
+    "prisma:push": "prisma db push --schema=../../shared/prisma/schema.prisma",
     "prebuild": "pnpm prisma:generate",
     "predev": "pnpm prisma:generate",
     "prepare": "pnpm prisma:generate"

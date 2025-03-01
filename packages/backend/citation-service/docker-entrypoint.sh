@@ -17,11 +17,11 @@ echo "PostgreSQL is ready!"
 
 # Generate Prisma client (if needed)
 echo "Generating Prisma client..."
-npx prisma generate
+pnpm prisma generate --schema=./prisma/schema.prisma
 
 # Run database migrations
 echo "Running database migrations..."
-npx prisma migrate deploy
+pnpm prisma migrate deploy --schema=./prisma/schema.prisma
 
 # Start the application
 echo "Starting application..."

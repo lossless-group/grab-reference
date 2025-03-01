@@ -21,7 +21,7 @@ COPY package.json ./
 
 # Copy service package files
 COPY packages/backend/citation-service/package.json ./packages/backend/citation-service/
-COPY packages/backend/citation-service/prisma ./packages/backend/citation-service/prisma/
+COPY packages/shared/prisma ./packages/shared/prisma/
 COPY packages/backend/citation-service/.env ./packages/backend/citation-service/
 
 # Install dependencies with Prisma build scripts enabled
@@ -31,8 +31,14 @@ RUN pnpm install
 COPY packages/backend/citation-service/tsconfig.json ./packages/backend/citation-service/
 COPY packages/backend/citation-service/src ./packages/backend/citation-service/src/
 
-# Generate Prisma client explicitly
-RUN cd packages/backend/citation-service && pnpm prisma generate
+# Generate Prisma client - install prisma locally first to ensure it's available
+RUN pnpm install prisma --save-dev --workspace-root
+# Create a minimal package.json in the packages directory for Prisma
+RUN mkdir -p /app/packages
+RUN echo '{"name":"prisma-placeholder","version":"0.1.0","private":true}' > /app/packages/package.json
+
+# Generate Prisma client
+RUN pnpm prisma generate --schema=/app/packages/shared/prisma/schema.prisma
 
 # Build
 WORKDIR /app/packages/backend/citation-service
@@ -61,7 +67,7 @@ COPY --from=builder /app/packages/backend/citation-service/node_modules ./node_m
 
 # Copy built files and other assets
 COPY --from=builder /app/packages/backend/citation-service/dist ./dist
-COPY --from=builder /app/packages/backend/citation-service/prisma ./prisma
+COPY --from=builder /app/packages/shared/prisma ./prisma
 COPY --from=builder /app/packages/backend/citation-service/.env ./.env
 
 # Create simpler entrypoint script focused on DB push rather than migrations

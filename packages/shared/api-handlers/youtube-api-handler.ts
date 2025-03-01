@@ -43,7 +43,21 @@ export const fetchYouTubeData = async (url: string): Promise<YouTubeData> => {
         statusText: response.statusText,
         errorResponse: data
       });
-      throw new Error(`YouTube API error: ${response.status} - ${data.error?.message || response.statusText}`);
+      
+      // Check for API key/authentication issues specifically
+      if (data.error?.status === 'INVALID_ARGUMENT' || 
+          data.error?.code === 400 ||
+          data.error?.errors?.some(e => e.reason === 'badRequest' || e.message?.includes('API key'))) {
+        throw new Error('YouTube API authentication failed. Please check your API key configuration.');
+      } 
+      // Check for quota exceeded
+      else if (data.error?.code === 403 || data.error?.errors?.some(e => e.reason === 'quotaExceeded')) {
+        throw new Error('YouTube API quota exceeded. Please try again later.');
+      }
+      // Generic error fallback
+      else {
+        throw new Error(`YouTube API error: ${response.status} - ${data.error?.message || response.statusText}`);
+      }
     }
 
     console.log('YouTube API Response:', data);

@@ -122,8 +122,7 @@ export default async function classifiersRoutes(fastify: FastifyInstance) {
       // Create the classifier
       const classifier = await prisma.classifier.create({
         data: {
-          referredToAs,
-          aliases
+          referredToAs
         }
       });
 
@@ -262,6 +261,87 @@ export default async function classifiersRoutes(fastify: FastifyInstance) {
       const id = request.params.id;
       const citationId = request.params.citationId;
       
+      fastify.log.info(`POST /classifiers/${id}/citations/${citationId} received`);
+      
+      const classifierId = parseInt(id, 10);
+      const parsedCitationId = parseInt(citationId, 10);
+      
+      if (isNaN(classifierId) || isNaN(parsedCitationId)) {
+        fastify.log.error(`Invalid ID format: classifier=${id}, citation=${citationId}`);
+        return reply.status(400).send({ 
+          error: 'Invalid ID format', 
+          message: 'Both classifier ID and citation ID must be numbers'
+        });
+      }
+      
+      fastify.log.info(`Linking classifier ${classifierId} to citation ${parsedCitationId}`);
+      
+      // Check if both entities exist
+      const classifier = await prisma.classifier.findUnique({
+        where: { id: classifierId }
+      });
+      
+      const citation = await prisma.citation.findUnique({
+        where: { id: parsedCitationId }
+      });
+      
+      fastify.log.info({
+        classifierFound: !!classifier,
+        citationFound: !!citation
+      }, 'Entity check results');
+      
+      if (!classifier) {
+        return reply.status(404).send({ 
+          error: 'Classifier not found', 
+          message: 'The requested classifier does not exist'
+        });
+      }
+      
+      if (!citation) {
+        return reply.status(404).send({ 
+          error: 'Citation not found', 
+          message: 'The requested citation does not exist'
+        });
+      }
+      
+      // Connect the classifier to the citation
+      fastify.log.info('Attempting to connect classifier to citation in database');
+      const updated = await prisma.classifier.update({
+        where: { id: classifierId },
+        data: {
+          citations: {
+            connect: { id: parsedCitationId }
+          }
+        }
+      });
+      
+      fastify.log.info({
+        result: 'success',
+        classifierId,
+        citationId: parsedCitationId,
+        updated: !!updated
+      }, 'Classifier associated with citation successfully');
+      
+      return { 
+        message: 'Classifier associated with citation successfully',
+        classifierId,
+        citationId: parsedCitationId
+      };
+    } catch (error) {
+      fastify.log.error(`Error associating classifier with citation: ${error}`);
+      return reply.status(500).send({ 
+        error: 'Failed to associate classifier with citation',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
+  // Remove a classifier from a citation
+  fastify.delete('/:id/citations/:citationId', async (request, reply) => {
+    try {
+      const id = request.params.id;
+      const citationId = request.params.citationId;
+      
       const classifierId = parseInt(id, 10);
       const parsedCitationId = parseInt(citationId, 10);
       
@@ -274,7 +354,8 @@ export default async function classifiersRoutes(fastify: FastifyInstance) {
       
       // Check if both entities exist
       const classifier = await prisma.classifier.findUnique({
-        where: { id: classifierId }
+        where: { id: classifierId },
+        include: { citations: true }
       });
       
       const citation = await prisma.citation.findUnique({
@@ -295,25 +376,35 @@ export default async function classifiersRoutes(fastify: FastifyInstance) {
         });
       }
       
-      // Connect the classifier to the citation
+      // Check if the relationship exists
+      const relationshipExists = classifier.citations.some(c => c.id === parsedCitationId);
+      
+      if (!relationshipExists) {
+        return reply.status(404).send({ 
+          error: 'Relationship not found', 
+          message: 'This classifier is not associated with the specified citation'
+        });
+      }
+      
+      // Disconnect the classifier from the citation
       await prisma.classifier.update({
         where: { id: classifierId },
         data: {
           citations: {
-            connect: { id: parsedCitationId }
+            disconnect: { id: parsedCitationId }
           }
         }
       });
       
       return { 
-        message: 'Classifier associated with citation successfully',
+        message: 'Classifier removed from citation successfully',
         classifierId,
         citationId: parsedCitationId
       };
     } catch (error) {
-      fastify.log.error(`Error associating classifier with citation: ${error}`);
+      fastify.log.error(`Error removing classifier from citation: ${error}`);
       return reply.status(500).send({ 
-        error: 'Failed to associate classifier with citation',
+        error: 'Failed to remove classifier from citation',
         message: error instanceof Error ? error.message : 'Unknown error'
       });
     }

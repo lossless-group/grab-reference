@@ -4,6 +4,7 @@ import { create, props } from '@stylexjs/stylex';
 import reloadIcon from '/public/icons/icon__Reload--Footnote-ID.svg';
 import copyIcon from '/public/icons/icon__Copy--CitationLine.svg';
 import deleteIcon from '/public/icons/icon__Delete--CitationLine.svg';
+import ClassifyCitation from './ClassifyCitation';
 
 // Define interfaces for the component props
 export interface Source {
@@ -461,122 +462,125 @@ export const CitationLine: React.FC<CitationLineProps> = ({
   };
 
   return (
-    <div {...props(styles.citationLine)}>
-      <div 
-        {...props(styles.iconContainer)} 
-        onClick={handleIconClick}
-        title={useRandHex ? "Switch to ID reference" : "Switch to hex reference"}
-      >
-        <img 
-          src={reloadIcon} 
-          alt="Toggle reference format" 
-          width="18" 
-          height="18" 
-          {...(isLoading && props(styles.loadingIcon))}
-        />
-      </div>
-      <div {...props(styles.contentContainer)}>
-        <p>
-          {showReference && (
-            <>
-              {getReference()}
+    <div>
+      <div {...props(styles.citationLine)}>
+        <div 
+          {...props(styles.iconContainer)} 
+          onClick={handleIconClick}
+          title={useRandHex ? "Switch to ID reference" : "Switch to hex reference"}
+        >
+          <img 
+            src={reloadIcon} 
+            alt="Toggle reference format" 
+            width="18" 
+            height="18" 
+            {...(isLoading && props(styles.loadingIcon))}
+          />
+        </div>
+        <div {...props(styles.contentContainer)}>
+          <p>
+            {showReference && (
+              <>
+                {getReference()}
+                <span 
+                  {...props(styles.switchFormat)} 
+                  onClick={cycleSeparatorFormat}
+                  title="Click to change separator"
+                >
+                  {formatOptions.separator[separatorFormat]}
+                </span>{' '}
+              </>
+            )}
+            
+            {citation.publishedTime && (
               <span 
                 {...props(styles.switchFormat)} 
-                onClick={cycleSeparatorFormat}
-                title="Click to change separator"
+                onClick={cycleDateFormat}
+                title="Click to change date format"
               >
-                {formatOptions.separator[separatorFormat]}
-              </span>{' '}
-            </>
-          )}
-          
-          {citation.publishedTime && (
-            <span 
-              {...props(styles.switchFormat)} 
-              onClick={cycleDateFormat}
-              title="Click to change date format"
-            >
-              {formatDate(citation.publishedTime)}
-              {dateFormat !== 2 && '.'}
-            </span>
-          )}{' '}
-          
-          <span
-            {...props(styles.switchFormat)}
-            title="Single click to change format, double click to open link"
-          >   
-            <a 
-              {...props(styles.citationLink, linkFormat === 1 ? styles.linkItalic : null)} 
-              href={citation.source?.url || citation.url}
-              target="_blank" 
-              rel="noopener noreferrer"
-              onClick={(e) => {
-                // Prevent default behavior (opening the link) on single click
-                e.preventDefault();
-                cycleLinkFormat();
-              }}
-              onDoubleClick={() => {
-                // Allow default behavior on double click (open the link)
-              }}
-            >
-              {formatTitle(citation.title)}
-            </a>
-          </span>
-          
-          {citation.source?.referredToAs && (
+                {formatDate(citation.publishedTime)}
+                {dateFormat !== 2 && '.'}
+              </span>
+            )}{' '}
+            
             <span
               {...props(styles.switchFormat)}
-              onClick={cycleSourcePrefixFormat}
-              title="Click to change source format"
-            >
-              {formatSource(citation.source.referredToAs)}
+              title="Single click to change format, double click to open link"
+            >   
+              <a 
+                {...props(styles.citationLink, linkFormat === 1 ? styles.linkItalic : null)} 
+                href={citation.source?.url || citation.url}
+                target="_blank" 
+                rel="noopener noreferrer"
+                onClick={(e) => {
+                  // Prevent default behavior (opening the link) on single click
+                  e.preventDefault();
+                  cycleLinkFormat();
+                }}
+                onDoubleClick={() => {
+                  // Allow default behavior on double click (open the link)
+                }}
+              >
+                {formatTitle(citation.title)}
+              </a>
             </span>
-          )}
-        </p>
-      </div>
-      
-      <div {...props(styles.copyIconContainer)}>
-        <div
-          onClick={handleCopyClick}
-          title="Copy citation as Markdown"
-          onMouseEnter={() => setShowTooltip(true)}
-          onMouseLeave={() => setShowTooltip(false)}
-        >
-          <img 
-            src={copyIcon} 
-            alt="Copy citation" 
-            width="18" 
-            height="18" 
-          />
-          <span {...props(
-            styles.copyTooltip, 
-            showTooltip && styles.copyTooltipVisible
-          )}>
-            {copyTooltip}
-          </span>
+            
+            {citation.source?.referredToAs && (
+              <span
+                {...props(styles.switchFormat)}
+                onClick={cycleSourcePrefixFormat}
+                title="Click to change source format"
+              >
+                {formatSource(citation.source.referredToAs)}
+              </span>
+            )}
+          </p>
         </div>
         
-        <div
-          {...props(styles.deleteButton)}
-          onClick={handleDeleteClick}
-          title="Delete citation"
-          onMouseEnter={() => setShowDeleteTooltip(true)}
-          onMouseLeave={() => setShowDeleteTooltip(false)}
-        >
-          <img 
-            src={deleteIcon} 
-            alt="Delete citation" 
-            width="18" 
-            height="18" 
-          />
-          <span {...props(
-            styles.deleteTooltip,
-            showDeleteTooltip && styles.deleteTooltipVisible
-          )}>
-            {deleteTooltip}
-          </span>
+        <div {...props(styles.copyIconContainer)}>
+          <div
+            onClick={handleCopyClick}
+            title="Copy citation as Markdown"
+            onMouseEnter={() => setShowTooltip(true)}
+            onMouseLeave={() => setShowTooltip(false)}
+          >
+            <img 
+              src={copyIcon} 
+              alt="Copy citation" 
+              width="18" 
+              height="18" 
+            />
+            <span {...props(
+              styles.copyTooltip, 
+              showTooltip && styles.copyTooltipVisible
+            )}>
+              {copyTooltip}
+            </span>
+          </div>
+          
+          <div
+            {...props(styles.deleteButton)}
+            onClick={handleDeleteClick}
+            title="Delete citation"
+            onMouseEnter={() => setShowDeleteTooltip(true)}
+            onMouseLeave={() => setShowDeleteTooltip(false)}
+          >
+            <img 
+              src={deleteIcon} 
+              alt="Delete citation" 
+              width="18" 
+              height="18" 
+            />
+            <span {...props(
+              styles.deleteTooltip,
+              showDeleteTooltip && styles.deleteTooltipVisible
+            )}>
+              {deleteTooltip}
+            </span>
+          </div>
         </div>
       </div>
+      <ClassifyCitation citation={citation} />
     </div>
   );
 };

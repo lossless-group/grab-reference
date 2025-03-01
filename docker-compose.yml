@@ -10,6 +10,11 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./packages/backend/init-postgres:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
       - citation-network
 
@@ -20,45 +25,35 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/citation_manager
+      - DB_HOST=postgres
+      - DB_PORT=5432
+    volumes:
+      - ./packages/shared/prisma:/app/packages/shared/prisma
     networks:
       - citation-network
       
   classifier-service:
     build:
-      context: ./packages/backend/classifier-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./packages/backend/classifier-service/Dockerfile
     ports:
       - "8081:8080"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/citation_manager
       - NODE_ENV=development
-    networks:
-      - citation-network
-
-  outerbase:
-    image: outerbase/outerbase:latest
-    ports:
-      - "3000:3000"
+      - DB_HOST=postgres
+      - DB_PORT=5432
     volumes:
-      - outerbase_data:/app/database
-    environment:
-      - DB_ENABLE_TELEMETRY=false
-      # PostgreSQL connection details
-      - DATABASE_HOST=postgres
-      - DATABASE_PORT=5432
-      - DATABASE_USER=postgres
-      - DATABASE_PASSWORD=postgres
-      - DATABASE_NAME=citation_manager
-      - DATABASE_TYPE=postgres
+      - ./packages/shared/prisma:/app/packages/shared/prisma
     networks:
       - citation-network
-    depends_on:
-      - postgres
 
   pgadmin:
     image: dpage/pgadmin4
@@ -72,7 +67,8 @@ services:
     networks:
       - citation-network
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
 
   web:
     build:

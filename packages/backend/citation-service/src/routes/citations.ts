@@ -20,6 +20,50 @@ export default async function citationsRoutes(fastify: FastifyInstance) {
     }
   });
 
+  // Get citation by ID
+  fastify.get('/:id', async (request, reply) => {
+    try {
+      const { id } = request.params as { id: string };
+      
+      const citationId = parseInt(id, 10);
+      if (isNaN(citationId)) {
+        fastify.log.error(`Invalid citation ID: "${id}" is not a number`);
+        return reply.status(400).send({ 
+          error: 'Invalid citation ID', 
+          message: 'Citation ID must be a number'
+        });
+      }
+      
+      fastify.log.info(`GET /citations/${citationId} received`);
+      
+      // Find the citation
+      const citation = await prisma.citation.findUnique({
+        where: { id: citationId },
+        include: {
+          authors: true,
+          source: true,
+          classifiers: true
+        }
+      });
+      
+      if (!citation) {
+        fastify.log.info(`Citation with ID ${citationId} not found`);
+        return reply.status(404).send({ 
+          error: 'Citation not found', 
+          message: 'The requested citation does not exist'
+        });
+      }
+      
+      return citation;
+    } catch (error) {
+      fastify.log.error(`Error fetching citation by ID: ${error}`);
+      return reply.status(500).send({ 
+        error: 'Failed to fetch citation',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
   // Create a new citation
   fastify.post('/', async (request, reply) => {
     try {
