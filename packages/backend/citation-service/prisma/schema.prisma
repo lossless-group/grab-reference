@@ -13,6 +13,8 @@ url      = env("DATABASE_URL")
 // Define your initial models here
 model Citation {
 id        Int      @id @default(autoincrement())
+uuid      String   @default(uuid())
+randHex   String?  @default(dbgenerated("encode(gen_random_bytes(16), 'hex')"))
 createdAt DateTime @default(now())
 updatedAt DateTime @updatedAt
 title     String?
@@ -31,6 +33,7 @@ responseDescription String? @db.Text
 
 model Author {
 id        Int      @id @default(autoincrement())
+uuid      String   @default(uuid())
 createdAt DateTime @default(now())
 updatedAt DateTime @updatedAt
 surName   String?
@@ -45,6 +48,7 @@ classifiers Classifier[] @relation("AuthorToClassifier")
 
 model Source {
 id            Int       @id @default(autoincrement())
+uuid          String    @default(uuid())  
 createdAt     DateTime  @default(now())
 updatedAt     DateTime  @updatedAt
 referredToAs  String?
@@ -65,6 +69,7 @@ childSources  Source[]  @relation("SourceHierarchy")
 
 model Classifier {
 id            Int       @id @default(autoincrement())
+uuid          String    @default(uuid())
 createdAt     DateTime  @default(now())
 updatedAt     DateTime  @updatedAt
 referredToAs  String?
