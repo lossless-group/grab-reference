@@ -6,66 +6,75 @@ import { YouTubeResponseViewer } from './YouTubeResponseViewer';
 
 const styles = create({
   container: {
+    width: '95%',
+    margin: '0 auto',
+    marginLeft: '0.75rem',
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
-    width: '100%',
-    maxWidth: '800px'
+    overflow: 'hidden',
   },
   title: {
-    fontSize: '2rem',
-    color: '#1a1a1a',
-    fontFamily: 'system-ui, -apple-system, sans-serif',
-    marginBottom: '2rem'
+    fontSize: '1.5rem',
+    fontWeight: 'bold',
+    marginBottom: '1rem',
+    color: '#111827',
   },
   form: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '1rem',
     width: '100%',
-    maxWidth: '500px',
-    padding: '0 1rem'
+    gap: '0.75rem',
+    marginBottom: '1.5rem',
   },
   input: {
+    width: '100%',
     padding: '0.75rem',
+    border: '1px solid #d1d5db',
+    borderRadius: '0.375rem',
     fontSize: '1rem',
-    borderRadius: '4px',
-    border: '1px solid #ccc',
-    width: '100%'
+    boxSizing: 'border-box',
   },
   button: {
-    padding: '0.75rem',
-    fontSize: '1rem',
-    backgroundColor: '#0070f3',
+    backgroundColor: '#2563eb',
     color: 'white',
-    border: 'none',
-    borderRadius: '4px',
+    fontWeight: 'bold',
+    padding: '0.75rem 1rem',
+    borderRadius: '0.375rem',
     cursor: 'pointer',
+    border: 'none',
+    transition: 'background-color 0.2s',
     ':hover': {
-      backgroundColor: '#0060df'
-    }
+      backgroundColor: '#1d4ed8',
+    },
+    alignSelf: 'flex-start',
   },
   queueContainer: {
     width: '100%',
-    maxWidth: '500px',
-    marginTop: '2rem',
-    padding: '0 1rem'
+    marginBottom: '1.5rem',
+    overflow: 'hidden',
   },
   queueList: {
-    listStyle: 'none',
+    listStyleType: 'none',
     padding: 0,
     margin: 0,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '0.5rem'
+    width: '100%',
   },
   queueItem: {
-    padding: '0.75rem',
-    backgroundColor: 'white',
-    borderRadius: '4px',
-    border: '1px solid #ccc',
+    padding: '0.5rem',
+    margin: '0.25rem 0',
+    backgroundColor: '#f3f4f6',
+    borderRadius: '0.25rem',
     fontSize: '0.875rem',
-    wordBreak: 'break-all'
+    wordBreak: 'break-word',
+    width: '100%',
+    boxSizing: 'border-box',
+  },
+  responseContainer: {
+    width: '100%',
+    maxWidth: '100%',
+    overflow: 'hidden',
+    wordWrap: 'break-word',
+    boxSizing: 'border-box',
   }
 });
 
@@ -123,7 +132,7 @@ const CiteCreator: React.FC = () => {
         </div>
       )}
       {(source || error) && (
-        <>
+        <div {...props(styles.responseContainer)}>
           <ResponseViewer 
             type={source?.type as 'youtube' | 'google-books' | 'unsupported'}
             data={source?.data}
@@ -135,7 +144,7 @@ const CiteCreator: React.FC = () => {
               url={source.url || ''}
             />
           )}
-        </>
+        </div>
       )}
     </div>
   );

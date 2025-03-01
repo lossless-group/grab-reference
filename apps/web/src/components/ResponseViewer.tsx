@@ -3,24 +3,35 @@ import { create, props } from '@stylexjs/stylex';
 const styles = create({
   container: {
     marginTop: '1rem',
+    marginBottom: '1rem',
+    marginLeft: 'auto',
+    marginRight: 'auto',
     padding: '1rem',
     backgroundColor: '#f9fafb',
     border: '1px solid #e5e7eb',
     borderRadius: '6px',
-    width: '88vw',
-    maxWidth: '1200px'
+    width: '88%',
+    maxWidth: '100%',
+    boxSizing: 'border-box',
+    overflow: 'hidden',
   },
   errorContainer: {
     marginTop: '1rem',
+    marginBottom: '1rem',
+    marginLeft: 'auto',
+    marginRight: 'auto',
     padding: '1rem',
     backgroundColor: '#fee2e2',
     border: '1px solid #ef4444',
     borderRadius: '6px',
-    width: '88vw',
-    maxWidth: '1200px'
+    width: '88%',
+    maxWidth: '100%',
+    boxSizing: 'border-box',
+    overflow: 'hidden',
   },
   errorText: {
-    color: '#b91c1c'
+    color: '#b91c1c',
+    wordBreak: 'break-word',
   },
   title: {
     fontSize: '1.125rem',
@@ -35,7 +46,9 @@ const styles = create({
     padding: '0.75rem',
     borderRadius: '6px',
     border: '1px solid #e5e7eb',
-    overflow: 'auto'
+    overflow: 'auto',
+    maxWidth: '100%',
+    boxSizing: 'border-box',
   }
 });
 

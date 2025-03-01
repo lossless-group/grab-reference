@@ -5,52 +5,75 @@ import CitationLine from './CitationLine';
 const styles = create({
   container: {
     marginTop: '1rem',
+    marginBottom: '1rem',
+    marginLeft: 'auto',
+    marginRight: 'auto',
     padding: '1rem',
-    backgroundColor: '#f0f9ff',
-    border: '1px solid #bae6fd',
+    backgroundColor: '#f9fafb',
+    border: '1px solid #e5e7eb',
     borderRadius: '6px',
-    width: '88vw',
-    maxWidth: '1200px'
+    width: '88%',
+    maxWidth: '100%',
+    boxSizing: 'border-box',
+    overflow: 'hidden',
+  },
+  section: {
+    marginTop: '1rem',
+    marginBottom: '1rem',
+    padding: '1rem',
+    backgroundColor: 'white',
+    border: '1px solid #e5e7eb',
+    borderRadius: '6px',
+    width: '100%',
+    boxSizing: 'border-box',
+    overflow: 'hidden',
   },
   title: {
     fontSize: '1.125rem',
     fontWeight: '600',
-    marginBottom: '1rem'
+    marginBottom: '0.5rem',
   },
   field: {
-    marginBottom: '0.5rem'
+    marginBottom: '0.75rem',
+    width: '100%',
+    wordBreak: 'break-word',
+    boxSizing: 'border-box',
   },
   label: {
-    fontWeight: '500',
-    color: '#0369a1'
+    fontWeight: 'bold',
+    marginRight: '0.5rem',
   },
   buttonContainer: {
+    marginTop: '1rem',
     display: 'flex',
-    justifyContent: 'flex-end',
-    marginTop: '1rem'
+    justifyContent: 'flex-start',
   },
   saveButton: {
-    padding: '0.5rem 1rem',
-    backgroundColor: '#10b981',
+    backgroundColor: '#2563eb',
     color: 'white',
     border: 'none',
-    borderRadius: '4px',
+    padding: '0.5rem 1rem',
+    borderRadius: '0.375rem',
     cursor: 'pointer',
-    fontSize: '0.875rem',
     ':hover': {
-      backgroundColor: '#059669'
-    }
+      backgroundColor: '#1d4ed8',
+    },
   },
   saveStatus: {
     marginTop: '0.5rem',
-    fontSize: '0.875rem',
-    textAlign: 'right'
+    padding: '0.5rem',
+    borderRadius: '0.25rem',
+    width: '100%',
+    boxSizing: 'border-box',
+    wordBreak: 'break-word',
   },
   success: {
-    color: '#059669'
+    backgroundColor: '#d1fae5',
+    color: '#065f46',
   },
   error: {
-    color: '#dc2626'
+    backgroundColor: '#fee2e2',
+    color: '#b91c1c',
   },
   citationLine: {
     marginTop: '1rem',
@@ -67,39 +90,44 @@ const styles = create({
       textDecoration: 'underline'
     }
   },
-  codeContainer: {
-    overflow: 'auto',
-    maxWidth: '100%'
-  },
   codeWrapper: {
     position: 'relative',
-    width: '100%'
+    marginTop: '0.5rem',
+    width: '100%',
+    boxSizing: 'border-box',
+  },
+  codeContainer: {
+    overflow: 'auto',
+    width: '100%',
+    boxSizing: 'border-box',
   },
   pre: {
     margin: 0,
-    wordWrap: 'break-word',
-    whiteSpace: 'pre-wrap',
-    overflowWrap: 'break-word'
+    padding: '1rem',
+    backgroundColor: '#f8f9fa',
+    borderRadius: '4px',
+    overflow: 'auto',
+    width: '100%',
+    boxSizing: 'border-box',
   },
   code: {
-    display: 'block',
     fontFamily: 'monospace',
-    fontSize: '0.9rem'
+    whiteSpace: 'pre-wrap',
+    wordBreak: 'break-word',
+    width: '100%',
   },
   copyButton: {
     position: 'absolute',
-    top: '8px',
-    right: '8px',
-    padding: '4px 8px',
+    top: '0.5rem',
+    right: '0.5rem',
+    padding: '0.25rem 0.5rem',
     backgroundColor: '#e5e7eb',
     border: 'none',
     borderRadius: '4px',
     cursor: 'pointer',
-    fontSize: '0.875rem',
-    ':hover': {
-      backgroundColor: '#d1d5db'
-    }
-  }
+    fontSize: '0.75rem',
+    zIndex: 1,
+  },
 });
 
 interface YouTubeData {
@@ -193,7 +221,7 @@ export const YouTubeResponseViewer = ({ data, url }: { data: YouTubeData; url: s
         customReference={citeMarkdown}
         useIdAsReference={false}
       />
-      <div {...props(styles.container)}>
+      <div {...props(styles.section)}>
         <h3 {...props(styles.title)}>Youtube HTML</h3>
         <div {...props(styles.codeWrapper)}>
           <button 
@@ -213,9 +241,9 @@ export const YouTubeResponseViewer = ({ data, url }: { data: YouTubeData; url: s
           </div>
         </div>
       </div>
-      <div {...props(styles.container)}>
+      <div {...props(styles.section)}>
         <h3 {...props(styles.title)}>Mapped Citation Data:</h3>
-        <p>{mappedData.source.url}</p>
+        <p style={{ wordBreak: 'break-word', width: '100%' }}>{mappedData.source.url}</p>
         <div {...props(styles.field)}>
           <span {...props(styles.label)}>Citation.title: </span>
           {mappedData.title}

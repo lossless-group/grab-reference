@@ -20,14 +20,26 @@ const styles = create({
     marginBottom: '2rem',
     textAlign: 'center'
   },
-  contentWrapper: {
-    width: '100%',
-    maxWidth: '1200px',
+  workspaceWrapper: {
     display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: '2rem'
-  }
+    flexDirection: 'row',
+    width: '100%',
+    height: '100%',
+    overflow: 'hidden',
+  },
+  leftColumn: {
+    width: '40vw',
+    height: '100%',
+    overflow: 'auto',
+    padding: '1rem',
+    borderRight: '1px solid #e5e7eb',
+  },
+  rightColumn: {
+    width: '60vw',
+    height: '100%',
+    overflow: 'auto',
+    padding: '1rem',
+  },
 });
 
 const App: React.FC = () => {
@@ -36,9 +48,13 @@ const App: React.FC = () => {
   return (
     <div {...props(styles.container)} className="app-container">
       <h1 {...props(styles.header)}>Citation Manager</h1>
-      <div {...props(styles.contentWrapper)}>
-        <CiteCreator />
-        <CitationsWindow />
+      <div {...props(styles.workspaceWrapper)}>
+        <div {...props(styles.leftColumn)}>
+          <CiteCreator />
+        </div>
+        <div {...props(styles.rightColumn)}>
+          <CitationsWindow />
+        </div>
       </div>
     </div>
   );
