@@ -1,0 +1,86 @@
+// This is your Prisma schema file
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Define your models here
+model Citation {
+  id        Int      @id @default(autoincrement())
+  uuid      String   @default(uuid())
+  randHex   String?  @default(dbgenerated("encode(gen_random_bytes(16), 'hex')"))
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  title     String?
+  url       String?
+  classifiers Classifier[]
+  authors   Author[]
+  source    Source?  @relation(fields: [sourceId], references: [id])
+  sourceId  Int?
+  publishedTime DateTime?
+  publishedYear Int?
+  publishedMonth Int? @db.SmallInt
+  publishedDay Int? @db.SmallInt
+  publishedOn String?
+  responseDescription String? @db.Text
+}
+
+model Author {
+  id        Int      @id @default(autoincrement())
+  uuid      String   @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  surName   String?
+  givenName String?
+  fullName  String?
+  citations Citation[]
+  classifiers Classifier[] @relation("AuthorToClassifier")
+
+  @@index([fullName])
+  @@unique([surName, givenName])
+}
+
+model Source {
+  id            Int       @id @default(autoincrement())
+  uuid          String    @default(uuid())  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  referredToAs  String?
+  url           String?
+  type          String?
+  citations     Citation[]
+  classifiers   Classifier[]
+
+  // Self-referential relationships
+  parentSources Source[]  @relation("SourceHierarchy")
+  childSources  Source[]  @relation("SourceHierarchy")
+
+  @@index([url])
+  @@index([type])
+  @@index([referredToAs])
+  @@unique([url])
+}
+
+model Classifier {
+  id            Int       @id @default(autoincrement())
+  uuid          String    @default(uuid())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  referredToAs  String    @unique
+  aliases       String[]  // Array of alternative names for the classifier
+  citations     Citation[]
+  sources       Source[]
+  authors       Author[]  @relation("AuthorToClassifier")
+
+  // Self-referential relationships
+  parentClassifiers Classifier[] @relation("ClassifierHierarchy")
+  childClassifiers  Classifier[] @relation("ClassifierHierarchy")
+
+  @@index([referredToAs])
+} 

@@ -25,6 +25,54 @@ services:
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/citation_manager
     networks:
       - citation-network
+      
+  classifier-service:
+    build:
+      context: ./packages/backend/classifier-service
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8080"
+    depends_on:
+      - postgres
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/citation_manager
+      - NODE_ENV=development
+    networks:
+      - citation-network
+
+  outerbase:
+    image: outerbase/outerbase:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - outerbase_data:/app/database
+    environment:
+      - DB_ENABLE_TELEMETRY=false
+      # PostgreSQL connection details
+      - DATABASE_HOST=postgres
+      - DATABASE_PORT=5432
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=postgres
+      - DATABASE_NAME=citation_manager
+      - DATABASE_TYPE=postgres
+    networks:
+      - citation-network
+    depends_on:
+      - postgres
+
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - "5050:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@example.com
+      - PGADMIN_DEFAULT_PASSWORD=adminpassword
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - citation-network
+    depends_on:
+      - postgres
 
   web:
     build:
@@ -34,6 +82,7 @@ services:
       - "5173:5173"
     depends_on:
       - citation-service
+      - classifier-service
     environment:
       - VITE_PORT=5173
     volumes:
@@ -58,3 +107,5 @@ networks:
 
 volumes:
   postgres_data: {}
+  pgadmin_data: {}
+  outerbase_data: {}
