@@ -1,20 +1,35 @@
 import React, { useEffect, useState } from 'react';
+import CitationLine, { Citation } from './CitationLine';
+import { create, props } from '@stylexjs/stylex';
 
-// Define interfaces based on your Prisma schema
-interface Source {
-  id: number;
-  referredToAs?: string;
-  url?: string;
-  type?: string;
-}
-
-interface Citation {
-  id: number;
-  title?: string;
-  url?: string;
-  publishedTime?: string | Date;
-  source?: Source;
-}
+const styles = create({
+  container: {
+    padding: '1rem',
+    maxWidth: '1000px',
+    margin: '0 auto',
+  },
+  heading: {
+    fontSize: '1.5rem',
+    fontWeight: '600',
+    marginBottom: '1rem',
+    color: '#111827',
+  },
+  list: {
+    listStyle: 'none',
+    padding: 0,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1rem',
+  },
+  message: {
+    color: '#6b7280',
+    fontStyle: 'italic',
+  },
+  loading: {
+    color: '#6b7280',
+    fontStyle: 'italic',
+  }
+});
 
 function CitationsList() {
   const [citations, setCitations] = useState<Citation[]>([]);
@@ -33,21 +48,22 @@ function CitationsList() {
       });
   }, []);
   
-  if (loading) return <div>Loading citations...</div>;
+  if (loading) return <div {...props(styles.loading)}>Loading citations...</div>;
   
   return (
-    <div>
-      <h2>Saved Citations</h2>
+    <div {...props(styles.container)}>
+      <h2 {...props(styles.heading)}>Saved Citations</h2>
       {citations.length === 0 ? (
-        <p>No citations found</p>
+        <p {...props(styles.message)}>No citations found</p>
       ) : (
-        <ul>
-          {citations.map(citation => (
-            <li key={citation.id}>
-              <h3>{citation.title}</h3>
-              <p>Published: {citation.publishedTime ? new Date(citation.publishedTime).toLocaleDateString() : 'Unknown date'}</p>
-              <p>Source: {citation.source?.referredToAs || 'Unknown source'}</p>
-              <p><a href={citation.url} target="_blank" rel="noopener noreferrer">View source</a></p>
+        <ul {...props(styles.list)}>
+          {citations.map((citation) => (
+            <li key={citation.id || Math.random()}>
+              <CitationLine 
+                citation={citation} 
+                showReference={true}
+                useIdAsReference={true}
+              />
             </li>
           ))}
         </ul>

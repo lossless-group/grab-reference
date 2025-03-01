@@ -1,5 +1,6 @@
 import { create, props } from '@stylexjs/stylex';
 import * as React from 'react';
+import CitationLine from './CitationLine';
 
 const styles = create({
   container: {
@@ -186,20 +187,12 @@ export const YouTubeResponseViewer = ({ data, url }: { data: YouTubeData; url: s
 
   return (
     <div {...props(styles.container)}>
-      <div {...props(styles.citationLine)}>
-        <p>
-          {citeMarkdown + ': ' + formatDate(mappedData.publishedTime)}.{' '}
-          <a 
-            {...props(styles.citationLink)} 
-            href={mappedData.source.url}
-            target="_blank" 
-            rel="noopener noreferrer"
-          >
-            {mappedData.title}
-          </a>
-          . {mappedData.source.referredToAs}.
-        </p>
-      </div>
+      <CitationLine 
+        citation={mappedData} 
+        showReference={true} 
+        customReference={citeMarkdown}
+        useIdAsReference={false}
+      />
       <div {...props(styles.container)}>
         <h3 {...props(styles.title)}>Youtube HTML</h3>
         <div {...props(styles.codeWrapper)}>
