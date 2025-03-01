@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import CitationLine, { Citation } from './CitationLine';
 import { create, props } from '@stylexjs/stylex';
 
@@ -31,24 +31,16 @@ const styles = create({
   }
 });
 
-function CitationsList() {
-  const [citations, setCitations] = useState<Citation[]>([]);
-  const [loading, setLoading] = useState(true);
-  
-  useEffect(() => {
-    fetch('/api/citations')
-      .then(response => response.json())
-      .then(data => {
-        setCitations(data);
-        setLoading(false);
-      })
-      .catch(error => {
-        console.error('Error fetching citations:', error);
-        setLoading(false);
-      });
-  }, []);
-  
+interface CitationsListProps {
+  citations?: Citation[];
+  loading?: boolean;
+  error?: string | null;
+}
+
+function CitationsList({ citations = [], loading = false, error = null }: CitationsListProps) {
   if (loading) return <div {...props(styles.loading)}>Loading citations...</div>;
+  
+  if (error) return <div {...props(styles.message)}>Error: {error}</div>;
   
   return (
     <div {...props(styles.container)}>
@@ -57,15 +49,19 @@ function CitationsList() {
         <p {...props(styles.message)}>No citations found</p>
       ) : (
         <ul {...props(styles.list)}>
-          {citations.map((citation) => (
-            <li key={citation.id || Math.random()}>
-              <CitationLine 
-                citation={citation} 
-                showReference={true}
-                useIdAsReference={true}
-              />
-            </li>
-          ))}
+          {citations.map((citation) => {
+            console.log('Rendering citation:', citation);
+            
+            return (
+              <li key={citation.id || Math.random()}>
+                <CitationLine 
+                  citation={citation} 
+                  showReference={true}
+                  useIdAsReference={true}
+                />
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>

@@ -4,6 +4,7 @@ import { observeUrl } from '@citation-manager/shared/utils/url-observer';
 import { ResponseViewer } from './components/ResponseViewer';
 import { YouTubeResponseViewer } from './components/YouTubeResponseViewer';
 import { useState, useEffect } from 'react';
+import CitationsList from './components/CitationsList';
 
 const styles = create({
   container: {
@@ -158,7 +159,11 @@ const App: React.FC = () => {
         return res.json();
       })
       .then(data => {
-        console.log('Citations data:', data);
+        console.log('Citations data received:', data);
+        // Log the first citation to check its structure
+        if (data && data.length > 0) {
+          console.log('First citation sample:', data[0]);
+        }
         setCitations(data || []);
         setCitationsLoading(false);
       })
@@ -219,19 +224,17 @@ const App: React.FC = () => {
       
       <div {...props(styles.citationsContainer)} className="citations-container">
         <h1>Citations</h1>
-        {citationsLoading ? (
-          <div>Loading citations...</div>
-        ) : citationsError ? (
+        {citationsError ? (
           <div {...props(styles.errorMessage)} className="error-message">
             Error loading citations: {citationsError}
             <p>The database may not be set up yet. Please run migrations.</p>
           </div>
-        ) : citations.length === 0 ? (
-          <div {...props(styles.emptyState)} className="empty-state">
-            <p>No citations found. Add your first citation by entering a URL above!</p>
-          </div>
         ) : (
-          <pre>{JSON.stringify(citations, null, 2)}</pre>
+          <CitationsList 
+            citations={citations} 
+            loading={citationsLoading} 
+            error={citationsError}
+          />
         )}
       </div>
     </div>

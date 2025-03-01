@@ -60,9 +60,21 @@ export const CitationLine: React.FC<CitationLineProps> = ({
 
   // Determine what reference to show
   const getReference = () => {
-    if (customReference) return customReference;
-    if (useIdAsReference && citation.id) return `[${citation.id}]`;
-    return '[?]'; // Fallback if no ID available
+    // For debugging
+    console.log('Citation ID:', citation.id, 'useIdAsReference:', useIdAsReference, 'customReference:', customReference);
+    
+    // Only use customReference if explicitly provided AND useIdAsReference is false
+    if (customReference && !useIdAsReference) {
+      return customReference;
+    }
+    
+    // Use ID if available and useIdAsReference is true
+    if (useIdAsReference && citation.id !== undefined) {
+      return `[${citation.id}]`;
+    }
+    
+    // Fallback
+    return customReference || '[?]';
   };
 
   return (
