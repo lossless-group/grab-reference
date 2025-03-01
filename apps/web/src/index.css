@@ -1,0 +1,49 @@
+/* Base styles */
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  box-sizing: border-box;
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+/* Container styles */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: white;
+}
+
+/* Form styling fallbacks */
+input, button {
+  padding: 0.75rem;
+  font-size: 1rem;
+  border-radius: 4px;
+}
+
+button {
+  background-color: #0070f3;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0060df;
+}
+
+/* Citation container fallback */
+.citations-container {
+  width: 100%;
+  max-width: 800px;
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+} 

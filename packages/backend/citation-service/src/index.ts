@@ -12,13 +12,6 @@ const fastify = Fastify({
   }
 })
 
-// Register CORS
-await fastify.register(cors, {
-  origin: true,  // Allow all origins in development
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true
-})
-
 // Health check endpoint
 fastify.get('/health', async () => {
   return { status: 'ok' }
@@ -82,14 +75,18 @@ const start = async (): Promise<void> => {
     await prisma.$connect()
     console.log('Successfully connected to database')
 
-    // Register plugins
+    // Register CORS only once with combined configuration
     await fastify.register(cors, {
+      // Allow localhost in development, but also support the methods and credentials from the first config
       origin: (origin, cb) => {
+        // If no origin or localhost, allow it
         if (!origin || origin.startsWith('http://localhost:')) {
           return cb(null, true)
         }
         cb(new Error('Not allowed'), false)
-      }
+      },
+      methods: ['GET', 'POST', 'PUT', 'DELETE'],
+      credentials: true
     })
 
     // Start server

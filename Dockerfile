@@ -2,7 +2,12 @@
 FROM node:20-alpine AS builder
 
 # Install pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN if command -v pnpm >/dev/null 2>&1; then \
+    echo "pnpm is already installed, version: $(pnpm --version)"; \
+    else \
+    echo "Installing pnpm via npm..."; \
+    npm install -g pnpm@latest --force; \
+    fi
 
 WORKDIR /app
 

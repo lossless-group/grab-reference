@@ -1,46 +1,59 @@
 services:
-  web:
-    build:
-      context: .
-      dockerfile: apps/web/Dockerfile
-    ports:
-      - "5173:5173"
-    volumes:
-      - .:/app
-      - /app/node_modules
-    depends_on:
-      - citation-service
-
-  citation-service:
-    build:
-      context: .
-      dockerfile: packages/backend/citation-service/Dockerfile
-    ports:
-      - "8080:8080"
-    volumes:
-      - .:/app
-      - /app/node_modules
-    depends_on:
-      postgres:
-        condition: service_healthy
-    environment:
-      DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/citation_db?schema=public"
-
   postgres:
-    image: postgres:15
+    image: postgres:16
     environment:
-      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: citation_db
+      POSTGRES_USER: postgres
+      POSTGRES_DB: citation_manager
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+    networks:
+      - citation-network
+
+  citation-service:
+    build:
+      context: .
+      dockerfile: ./packages/backend/citation-service/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/citation_manager
+    networks:
+      - citation-network
+
+  web:
+    build:
+      context: .
+      dockerfile: ./apps/web/Dockerfile.dev
+    ports:
+      - "5173:5173"
+    depends_on:
+      - citation-service
+    environment:
+      - VITE_PORT=5173
+    volumes:
+      # Mount source code directories for hot reloading
+      - ./apps/web/src:/app/apps/web/src
+      - ./apps/web/public:/app/apps/web/public
+      - ./apps/web/index.html:/app/apps/web/index.html
+      - ./packages/shared:/app/packages/shared
+      
+      # Mount configuration files
+      - ./apps/web/.env:/app/apps/web/.env
+      - ./apps/web/tsconfig.json:/app/apps/web/tsconfig.json
+      - ./apps/web/tsconfig.node.json:/app/apps/web/tsconfig.node.json
+      - ./apps/web/vite.config.ts:/app/apps/web/vite.config.ts
+      - ./apps/web/src/stylex.css:/app/apps/web/src/stylex.css
+    networks:
+      - citation-network
+
+networks:
+  citation-network:
+    driver: bridge
 
 volumes:
   postgres_data: {}

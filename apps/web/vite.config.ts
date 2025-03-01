@@ -10,7 +10,11 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       react(),
-      stylex()
+      // Using configuration based on HorusGoul/vite-plugin-stylex
+      stylex({
+        classNamePrefix: 'cm-',
+        // No need for unstable_moduleResolution in the latest version
+      })
     ],
     build: {
       outDir: 'dist',

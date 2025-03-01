@@ -1,0 +1,36 @@
+FROM node:20-slim
+
+# Robust pnpm installation that handles all cases
+RUN if command -v pnpm >/dev/null 2>&1; then \
+    echo "pnpm is already installed, version: $(pnpm --version)"; \
+    else \
+    echo "Installing pnpm via npm..."; \
+    npm install -g pnpm@latest-10 --force; \
+    fi
+
+WORKDIR /app
+
+# Create directories we need 
+RUN mkdir -p ./apps/web/src
+
+# Copy package management files for the monorepo (these we know exist)
+COPY pnpm-*.yaml ./
+COPY package.json ./
+COPY apps/web/package.json ./apps/web/
+COPY packages/shared/package.json ./packages/shared/
+COPY .npmrc ./
+
+# Install dependencies
+RUN pnpm install
+
+# Create ONLY the root tsconfig.json - we'll let volume mounts bring in the app-specific one
+RUN echo '{\n  "compilerOptions": {\n    "target": "ES2020",\n    "module": "ESNext",\n    "moduleResolution": "bundler",\n    "esModuleInterop": true,\n    "strict": true,\n    "skipLibCheck": true,\n    "resolveJsonModule": true,\n    "isolatedModules": true,\n    "noEmit": true,\n    "jsx": "react-jsx"\n  },\n  "exclude": ["node_modules"]\n}' > ./tsconfig.json
+
+# Set up for development mode
+ENV NODE_ENV=development
+
+# Expose Vite dev server port
+EXPOSE 5173
+
+# Start the Vite dev server
+CMD ["pnpm", "--filter", "web", "dev", "--host"] 

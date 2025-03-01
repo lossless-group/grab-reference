@@ -79,6 +79,29 @@ const styles = create({
     borderRadius: '4px',
     boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
     zIndex: 1000
+  },
+  citationsContainer: {
+    width: '100%',
+    maxWidth: '800px',
+    marginTop: '2rem',
+    padding: '1rem',
+    backgroundColor: '#f5f5f5',
+    borderRadius: '8px'
+  },
+  errorMessage: {
+    color: '#e53e3e',
+    padding: '1rem',
+    backgroundColor: '#fff5f5',
+    borderRadius: '4px',
+    marginTop: '1rem'
+  },
+  emptyState: {
+    padding: '2rem',
+    textAlign: 'center',
+    color: '#666',
+    backgroundColor: '#f9f9f9',
+    borderRadius: '8px',
+    border: '1px dashed #ccc'
   }
 });
 
@@ -90,7 +113,8 @@ const App: React.FC = () => {
   const [source, setSource] = React.useState<{ type: string; data?: any; url?: string } | null>(null);
   const [error, setError] = React.useState<string | null>(null);
   const [citations, setCitations] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [citationsLoading, setCitationsLoading] = useState(true);
+  const [citationsError, setCitationsError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -115,6 +139,20 @@ const App: React.FC = () => {
     fetch('/api/citations')
       .then(res => {
         if (!res.ok) {
+          if (res.status === 500) {
+            return res.text().then(text => {
+              try {
+                const error = JSON.parse(text);
+                // Check if it's a database table doesn't exist error
+                if (error.code === 'P2021') {
+                  throw new Error('Database tables not initialized. Database migrations need to be run.');
+                }
+                throw new Error(`Server error: ${error.message || 'Unknown error'}`);
+              } catch (e) {
+                throw new Error(`HTTP error! status: ${res.status}`);
+              }
+            });
+          }
           throw new Error(`HTTP error! status: ${res.status}`);
         }
         return res.json();
@@ -122,43 +160,41 @@ const App: React.FC = () => {
       .then(data => {
         console.log('Citations data:', data);
         setCitations(data || []);
-        setLoading(false);
+        setCitationsLoading(false);
       })
       .catch(err => {
         console.error('Error fetching citations:', err);
         setCitations([]);
-        setError('Failed to load citations');
-        setLoading(false);
+        setCitationsError(err instanceof Error ? err.message : 'Failed to load citations');
+        setCitationsLoading(false);
       });
   }, []);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
-
   return (
-    <div {...props(styles.container)}>
+    <div {...props(styles.container)} className="app-container">
       <div style={{ padding: '20px', backgroundColor: 'red' }}>Test Content</div>
       <h1>Citation Manager</h1>
       <h1 {...props(styles.text)}>Grab a citation</h1>
-      <form {...props(styles.form)} onSubmit={handleSubmit}>
+      <form {...props(styles.form)} className="citation-form" onSubmit={handleSubmit}>
         <input
           {...props(styles.input)}
+          className="url-input"
           type="url"
           placeholder="Enter URL"
           required
           value={inputUrl}
           onChange={(e) => setInputUrl(e.target.value)}
         />
-        <button {...props(styles.button)} type="submit">
+        <button {...props(styles.button)} className="submit-button" type="submit">
           Get Citation
         </button>
       </form>
       
       {citeQueue.length > 0 && (
-        <div {...props(styles.queueContainer)}>
-          <ul {...props(styles.queueList)}>
+        <div {...props(styles.queueContainer)} className="queue-container">
+          <ul {...props(styles.queueList)} className="queue-list">
             {[...citeQueue].reverse().map((url, index) => (
-              <li key={index} {...props(styles.queueItem)}>
+              <li key={index} {...props(styles.queueItem)} className="queue-item">
                 {url}
               </li>
             ))}
@@ -180,8 +216,24 @@ const App: React.FC = () => {
           )}
         </>
       )}
-      <h1>Citations</h1>
-      <pre>{JSON.stringify(citations, null, 2)}</pre>
+      
+      <div {...props(styles.citationsContainer)} className="citations-container">
+        <h1>Citations</h1>
+        {citationsLoading ? (
+          <div>Loading citations...</div>
+        ) : citationsError ? (
+          <div {...props(styles.errorMessage)} className="error-message">
+            Error loading citations: {citationsError}
+            <p>The database may not be set up yet. Please run migrations.</p>
+          </div>
+        ) : citations.length === 0 ? (
+          <div {...props(styles.emptyState)} className="empty-state">
+            <p>No citations found. Add your first citation by entering a URL above!</p>
+          </div>
+        ) : (
+          <pre>{JSON.stringify(citations, null, 2)}</pre>
+        )}
+      </div>
     </div>
   );
 };
