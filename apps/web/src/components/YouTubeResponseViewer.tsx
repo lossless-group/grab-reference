@@ -1,6 +1,7 @@
 import { create, props } from '@stylexjs/stylex';
 import * as React from 'react';
 import CitationLine from './CitationLine';
+import { useCitations } from '../contexts/CitationContext';
 
 const styles = create({
   container: {
@@ -158,6 +159,7 @@ interface SaveStatus {
 
 export const YouTubeResponseViewer = ({ data, url }: { data: YouTubeData; url: string }) => {
   const [saveStatus, setSaveStatus] = React.useState<SaveStatus | null>(null);
+  const { addCitation } = useCitations();
 
   const formatDate = (date: Date) => {
     const year = date.getFullYear();
@@ -192,6 +194,13 @@ export const YouTubeResponseViewer = ({ data, url }: { data: YouTubeData; url: s
         throw new Error('Failed to save citation');
       }
 
+      // Get the saved citation with its ID from the response
+      const savedCitation = await response.json();
+      console.log('Citation saved successfully:', savedCitation);
+      
+      // Add the new citation to the context
+      addCitation(savedCitation);
+      
       setSaveStatus({ success: true, message: 'Citation saved successfully!' });
     } catch (error) {
       setSaveStatus({ 
