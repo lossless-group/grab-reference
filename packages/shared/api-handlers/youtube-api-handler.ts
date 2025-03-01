@@ -47,11 +47,13 @@ export const fetchYouTubeData = async (url: string): Promise<YouTubeData> => {
       // Check for API key/authentication issues specifically
       if (data.error?.status === 'INVALID_ARGUMENT' || 
           data.error?.code === 400 ||
-          data.error?.errors?.some(e => e.reason === 'badRequest' || e.message?.includes('API key'))) {
+          data.error?.errors?.some((e: { reason?: string; message?: string }) => 
+            e.reason === 'badRequest' || e.message?.includes('API key'))) {
         throw new Error('YouTube API authentication failed. Please check your API key configuration.');
       } 
       // Check for quota exceeded
-      else if (data.error?.code === 403 || data.error?.errors?.some(e => e.reason === 'quotaExceeded')) {
+      else if (data.error?.code === 403 || data.error?.errors?.some((e: { reason?: string; message?: string }) => 
+        e.reason === 'quotaExceeded')) {
         throw new Error('YouTube API quota exceeded. Please try again later.');
       }
       // Generic error fallback
