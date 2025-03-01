@@ -104,7 +104,7 @@ const styles = create({
   pre: {
     margin: 0,
     padding: '1rem',
-    backgroundColor: '#f8f9fa',
+    backgroundColor: 'hsla(135, 95%, 92%, 1.00)',
     borderRadius: '4px',
     overflow: 'auto',
     width: '100%',
