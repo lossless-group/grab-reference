@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 66.99 68.15" id="delete">
+  <g id="Layer_2">
+    <g id="icon">
+      <g style="opacity:.15">
+        <rect width="48" height="51" x="17.5" y="17.15" rx="5" ry="5" style="fill:#b76a8a"></rect>
+      </g>
+      <rect width="50" height="51" x="8.5" y="10.15" rx="2" ry="2" style="fill:none;stroke:#6a80b9;stroke-miterlimit:10;stroke-width:5px"></rect>
+      <path d="M66.99 10.15H0" style="fill:none;stroke:#6a80b9;stroke-miterlimit:10;stroke-width:5px"></path>
+      <path d="M43.26 10.21H23.74l2-8.71h15.52l2 8.71z" style="fill:none;stroke:#6a80b9;stroke-miterlimit:10;stroke-width:3px"></path>
+      <path d="M23.74 21.15v28.5M43.26 21.15v28.5" style="fill:none;stroke:#6a80b9;stroke-miterlimit:10;stroke-width:2px"></path>
+    </g>
+  </g>
+</svg>

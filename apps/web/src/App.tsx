@@ -26,18 +26,20 @@ const styles = create({
     flexDirection: 'row',
     width: '100%',
     height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
     overflow: 'hidden',
   },
   leftColumn: {
     width: '40vw',
-    height: '100%',
+    height: '96vh',
     overflow: 'auto',
     padding: '1rem',
     borderRight: '1px solid #e5e7eb',
   },
   rightColumn: {
     width: '60vw',
-    height: '100%',
+    height: '96vh',
     overflow: 'auto',
     padding: '1rem',
   },
@@ -49,7 +51,6 @@ const App: React.FC = () => {
   return (
     <CitationProvider>
       <div {...props(styles.container)} className="app-container">
-        <h1 {...props(styles.header)}>Citation Manager</h1>
         <div {...props(styles.workspaceWrapper)}>
           <div {...props(styles.leftColumn)}>
             <CiteCreator />

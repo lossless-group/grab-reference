@@ -6,6 +6,7 @@ interface CitationContextType {
   loading: boolean;
   error: string | null;
   addCitation: (citation: Citation) => void;
+  deleteCitation: (id: number) => void;
   refreshCitations: () => Promise<void>;
 }
 
@@ -57,6 +58,11 @@ export const CitationProvider: React.FC<{ children: ReactNode }> = ({ children }
     setCitations(prevCitations => [newCitation, ...prevCitations]);
   };
 
+  const deleteCitation = (id: number) => {
+    // Remove the citation from the local state
+    setCitations(prevCitations => prevCitations.filter(citation => citation.id !== id));
+  };
+
   const refreshCitations = async () => {
     await fetchCitations();
   };
@@ -68,6 +74,7 @@ export const CitationProvider: React.FC<{ children: ReactNode }> = ({ children }
         loading, 
         error, 
         addCitation,
+        deleteCitation,
         refreshCitations
       }}
     >

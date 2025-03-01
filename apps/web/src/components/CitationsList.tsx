@@ -1,6 +1,7 @@
 import React from 'react';
 import CitationLine, { Citation } from './CitationLine';
 import { create, props } from '@stylexjs/stylex';
+import { useCitations } from '../contexts/CitationContext';
 
 const styles = create({
   container: {
@@ -38,9 +39,15 @@ interface CitationsListProps {
 }
 
 function CitationsList({ citations = [], loading = false, error = null }: CitationsListProps) {
+  const { deleteCitation } = useCitations();
+  
   if (loading) return <div {...props(styles.loading)}>Loading citations...</div>;
   
   if (error) return <div {...props(styles.message)}>Error: {error}</div>;
+  
+  const handleDelete = (id: number) => {
+    deleteCitation(id);
+  };
   
   return (
     <div {...props(styles.container)}>
@@ -58,6 +65,7 @@ function CitationsList({ citations = [], loading = false, error = null }: Citati
                   citation={citation} 
                   showReference={true}
                   useIdAsReference={true}
+                  onDelete={handleDelete}
                 />
               </li>
             );

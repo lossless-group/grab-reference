@@ -3,6 +3,7 @@ import { create, props } from '@stylexjs/stylex';
 // Import the SVG icons
 import reloadIcon from '/public/icons/icon__Reload--Footnote-ID.svg';
 import copyIcon from '/public/icons/icon__Copy--CitationLine.svg';
+import deleteIcon from '/public/icons/icon__Delete--CitationLine.svg';
 
 // Define interfaces for the component props
 export interface Source {
@@ -27,6 +28,7 @@ interface CitationLineProps {
   showReference?: boolean;
   customReference?: string;
   useIdAsReference?: boolean;
+  onDelete?: (id: number) => void;
 }
 
 // Format options for each citation part
@@ -67,9 +69,6 @@ const styles = create({
   linkItalic: {
     fontStyle: 'italic'
   },
-  linkUnderline: {
-    textDecoration: 'underline'
-  },
   iconContainer: {
     flexShrink: 0,
     marginTop: '2px', // Slight adjustment to align with text
@@ -99,7 +98,9 @@ const styles = create({
     ':hover': {
       opacity: 1
     },
-    transition: 'opacity 0.2s'
+    transition: 'opacity 0.2s',
+    display: 'flex',
+    gap: '8px'
   },
   copyTooltip: {
     position: 'absolute',
@@ -118,6 +119,32 @@ const styles = create({
   },
   copyTooltipVisible: {
     opacity: 1
+  },
+  deleteTooltip: {
+    position: 'absolute',
+    backgroundColor: '#333',
+    color: 'white',
+    padding: '4px 8px',
+    borderRadius: '4px',
+    fontSize: '12px',
+    pointerEvents: 'none',
+    whiteSpace: 'nowrap',
+    transform: 'translateX(-100%) translateY(-100%)',
+    marginLeft: '-10px',
+    marginTop: '-10px',
+    opacity: 0,
+    transition: 'opacity 0.2s'
+  },
+  deleteTooltipVisible: {
+    opacity: 1
+  },
+  deleteButton: {
+    cursor: 'pointer',
+    opacity: 0.6,
+    ':hover': {
+      opacity: 1
+    },
+    transition: 'opacity 0.2s'
   }
 });
 
@@ -125,7 +152,8 @@ export const CitationLine: React.FC<CitationLineProps> = ({
   citation, 
   showReference = false,
   customReference,
-  useIdAsReference = true
+  useIdAsReference = true,
+  onDelete
 }) => {
   // State to track if we're using randHex and store the randHex value
   const [useRandHex, setUseRandHex] = useState(false);
@@ -140,9 +168,15 @@ export const CitationLine: React.FC<CitationLineProps> = ({
   
   // Format options (could be passed as props for customization)
   const formatOptions: FormatOptions = DEFAULT_FORMAT_OPTIONS;
-
+  
+  // Copy state
   const [copyTooltip, setCopyTooltip] = useState<string>('Copy to clipboard');
   const [showTooltip, setShowTooltip] = useState<boolean>(false);
+  
+  // Delete state
+  const [deleteTooltip, setDeleteTooltip] = useState<string>('Delete citation');
+  const [showDeleteTooltip, setShowDeleteTooltip] = useState<boolean>(false);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
   const formatDate = (date: Date | string | undefined) => {
     if (!date) return 'No date';
@@ -214,9 +248,6 @@ export const CitationLine: React.FC<CitationLineProps> = ({
 
   // Determine what reference to show
   const getReference = () => {
-    // For debugging
-    console.log('Citation ID:', citation.id, 'useIdAsReference:', useIdAsReference, 'useRandHex:', useRandHex);
-    
     // Use randHex if toggled on and available
     if (useRandHex && randHex) {
       return `[^${randHex.substring(0, 6)}]`; // Show first 6 characters of hex
@@ -256,8 +287,6 @@ export const CitationLine: React.FC<CitationLineProps> = ({
   // Function to render the title with the appropriate format
   const formatTitle = (title: string | undefined) => {
     if (!title) return '';
-    
-    // Only add quotes for the "quotes" format, other formats are handled by styling
     return linkFormat === 0 ? `"${title}"` : title;
   };
 
@@ -272,16 +301,6 @@ export const CitationLine: React.FC<CitationLineProps> = ({
     
     // For regular prefixes, return the prefix followed by the source
     return `${formatOptions.sourcePrefix[sourcePrefixFormat]}${source}`;
-  };
-
-  // Function to get link style based on format
-  const getLinkStyle = () => {
-    switch (linkFormat) {
-      case 1: // italics
-        return styles.linkItalic;
-      default:
-        return null;
-    }
   };
 
   // Generate markdown text for copying
@@ -360,6 +379,87 @@ export const CitationLine: React.FC<CitationLineProps> = ({
     );
   };
 
+  // Handle delete citation
+  const handleDeleteClick = async () => {
+    if (!citation.id) {
+      console.error('Cannot delete citation: Citation ID is undefined');
+      setDeleteTooltip('Error: No citation ID');
+      setShowDeleteTooltip(true);
+      setTimeout(() => {
+        setShowDeleteTooltip(false);
+        setTimeout(() => {
+          setDeleteTooltip('Delete citation');
+        }, 300);
+      }, 1500);
+      return;
+    }
+
+    // Ensure citation.id is a number
+    const citationId = Number(citation.id);
+    if (isNaN(citationId)) {
+      console.error(`Invalid citation ID: ${citation.id} is not a number`);
+      setDeleteTooltip('Error: Invalid citation ID');
+      setShowDeleteTooltip(true);
+      setTimeout(() => {
+        setShowDeleteTooltip(false);
+        setTimeout(() => {
+          setDeleteTooltip('Delete citation');
+        }, 300);
+      }, 1500);
+      return;
+    }
+
+    setIsDeleting(true);
+    setDeleteTooltip('Deleting...');
+    setShowDeleteTooltip(true);
+
+    try {
+      console.log(`Attempting to delete citation with ID: ${citationId}`);
+      // Call to backend API to delete the citation
+      const response = await fetch(`/api/citations/${citationId}`, {
+        method: 'DELETE',
+      });
+      
+      // Log the response for debugging
+      console.log(`Delete response status: ${response.status}`);
+      
+      if (!response.ok) {
+        let errorMsg = '';
+        try {
+          const errorData = await response.json();
+          errorMsg = errorData.message || `${response.statusText || response.status}`;
+          console.error('Error response body:', errorData);
+        } catch {
+          errorMsg = `${response.statusText || response.status}`;
+        }
+        
+        if (response.status === 404) {
+          throw new Error('Citation not found. It may have been deleted already.');
+        } else {
+          throw new Error(`Failed to delete citation: ${errorMsg}`);
+        }
+      }
+      
+      setDeleteTooltip('Deleted!');
+      
+      // Call the onDelete callback if provided
+      if (onDelete && citation.id) {
+        onDelete(citation.id);
+      }
+    } catch (error) {
+      console.error('Error deleting citation:', error);
+      setDeleteTooltip(error instanceof Error ? error.message : 'Failed to delete');
+    } finally {
+      setIsDeleting(false);
+      setTimeout(() => {
+        setShowDeleteTooltip(false);
+        setTimeout(() => {
+          setDeleteTooltip('Delete citation');
+        }, 300);
+      }, 1500);
+    }
+  };
+
   return (
     <div {...props(styles.citationLine)}>
       <div 
@@ -406,7 +506,7 @@ export const CitationLine: React.FC<CitationLineProps> = ({
             title="Single click to change format, double click to open link"
           >   
             <a 
-              {...props(styles.citationLink, getLinkStyle())} 
+              {...props(styles.citationLink, linkFormat === 1 ? styles.linkItalic : null)} 
               href={citation.source?.url || citation.url}
               target="_blank" 
               rel="noopener noreferrer"
@@ -415,9 +515,8 @@ export const CitationLine: React.FC<CitationLineProps> = ({
                 e.preventDefault();
                 cycleLinkFormat();
               }}
-              onDoubleClick={(e) => {
+              onDoubleClick={() => {
                 // Allow default behavior on double click (open the link)
-                // We don't need to do anything special here
               }}
             >
               {formatTitle(citation.title)}
@@ -436,25 +535,47 @@ export const CitationLine: React.FC<CitationLineProps> = ({
         </p>
       </div>
       
-      <div 
-        {...props(styles.copyIconContainer)}
-        onClick={handleCopyClick}
-        title="Copy citation as Markdown"
-        onMouseEnter={() => setShowTooltip(true)}
-        onMouseLeave={() => setShowTooltip(false)}
-      >
-        <img 
-          src={copyIcon} 
-          alt="Copy citation" 
-          width="18" 
-          height="18" 
-        />
-        <span {...props(
-          styles.copyTooltip, 
-          showTooltip && styles.copyTooltipVisible
-        )}>
-          {copyTooltip}
-        </span>
+      <div {...props(styles.copyIconContainer)}>
+        <div
+          onClick={handleCopyClick}
+          title="Copy citation as Markdown"
+          onMouseEnter={() => setShowTooltip(true)}
+          onMouseLeave={() => setShowTooltip(false)}
+        >
+          <img 
+            src={copyIcon} 
+            alt="Copy citation" 
+            width="18" 
+            height="18" 
+          />
+          <span {...props(
+            styles.copyTooltip, 
+            showTooltip && styles.copyTooltipVisible
+          )}>
+            {copyTooltip}
+          </span>
+        </div>
+        
+        <div
+          {...props(styles.deleteButton)}
+          onClick={handleDeleteClick}
+          title="Delete citation"
+          onMouseEnter={() => setShowDeleteTooltip(true)}
+          onMouseLeave={() => setShowDeleteTooltip(false)}
+        >
+          <img 
+            src={deleteIcon} 
+            alt="Delete citation" 
+            width="18" 
+            height="18" 
+          />
+          <span {...props(
+            styles.deleteTooltip,
+            showDeleteTooltip && styles.deleteTooltipVisible
+          )}>
+            {deleteTooltip}
+          </span>
+        </div>
       </div>
     </div>
   );

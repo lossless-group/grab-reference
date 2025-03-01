@@ -6,28 +6,34 @@ import { YouTubeResponseViewer } from './YouTubeResponseViewer';
 
 const styles = create({
   container: {
-    width: '95%',
-    margin: '0 auto',
-    marginLeft: '0.75rem',
+    width: '100%',
+    margin: '0',
     display: 'flex',
     flexDirection: 'column',
     overflow: 'hidden',
+    paddingTop: '2vh',
+    alignItems: 'center',
   },
   title: {
     fontSize: '1.5rem',
     fontWeight: 'bold',
     marginBottom: '1rem',
     color: '#111827',
+    textAlign: 'center',
   },
   form: {
     display: 'flex',
-    flexDirection: 'column',
-    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '90%',
+    maxWidth: '500px',
     gap: '0.75rem',
     marginBottom: '1.5rem',
+    marginTop: '0.5rem',
   },
   input: {
-    width: '100%',
+    width: '70%',
     padding: '0.75rem',
     border: '1px solid #d1d5db',
     borderRadius: '0.375rem',
@@ -46,7 +52,7 @@ const styles = create({
     ':hover': {
       backgroundColor: '#1d4ed8',
     },
-    alignSelf: 'flex-start',
+    whiteSpace: 'nowrap',
   },
   queueContainer: {
     width: '100%',
