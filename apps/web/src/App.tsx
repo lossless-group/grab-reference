@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { create, props } from '@stylexjs/stylex';
-import { observeUrl } from '@citation-manager/shared/utils/url-observer';
 import CitationsWindow from './components/CitationsWindow';
 import CiteCreator from './components/CiteCreator';
+import { observeUrl } from '@citation-manager/shared/utils/url-observer';
 
 const styles = create({
   container: {
@@ -99,29 +99,6 @@ const styles = create({
 
 const App: React.FC = () => {
   console.log('App component rendering');
-
-  const [citeQueue, setCiteQueue] = React.useState<string[]>([]);
-  const [inputUrl, setInputUrl] = React.useState('');
-  const [source, setSource] = React.useState<{ type: string; data?: any; url?: string } | null>(null);
-  const [error, setError] = React.useState<string | null>(null);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setSource(null);
-
-    if (inputUrl.trim()) {
-      try {
-        const result = await observeUrl(inputUrl.trim());
-        console.log('Citation data:', result);
-        setCiteQueue(prev => [...prev, inputUrl.trim()]);
-        setInputUrl('');
-        setSource({ type: result.type, data: result.data, url: inputUrl.trim() });
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
-      }
-    }
-  };
 
   return (
     <div {...props(styles.container)} className="app-container">
