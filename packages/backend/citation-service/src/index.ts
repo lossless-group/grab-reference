@@ -37,8 +37,22 @@ fastify.get('/citations', async () => {
 // Add POST endpoint for citations
 fastify.post('/citations', async (request, reply) => {
   try {
+    fastify.log.info('POST /citations received');
+    
+    // Don't log the entire body as it might contain large text
     const { title, publishedTime, responseDescription, source } = request.body as any;
+    
+    fastify.log.info({
+      title,
+      publishedTime,
+      sourceUrl: source?.url,
+      sourceType: source?.type,
+      responseDescriptionLength: responseDescription?.length || 0
+    }, 'Citation data received');
 
+    // Ensure responseDescription is properly handled
+    const safeResponseDescription = responseDescription || '';
+    
     // Create or find the source first
     const sourceRecord = await prisma.source.upsert({
       where: { url: source.url },
@@ -56,15 +70,19 @@ fastify.post('/citations', async (request, reply) => {
         title,
         url: source.url,
         publishedTime,
-        responseDescription,
+        responseDescription: safeResponseDescription,
         sourceId: sourceRecord.id
       }
     });
 
+    fastify.log.info({ citationId: citation.id }, 'Citation created successfully');
     return citation;
   } catch (error) {
-    fastify.log.error(error);
-    throw error;
+    fastify.log.error('Error creating citation:', error);
+    reply.status(500).send({ 
+      error: 'Failed to create citation',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 });
 
@@ -77,13 +95,10 @@ const start = async (): Promise<void> => {
 
     // Register CORS only once with combined configuration
     await fastify.register(cors, {
-      // Allow localhost in development, but also support the methods and credentials from the first config
+      // Allow frontend requests with appropriate CORS headers
       origin: (origin, cb) => {
-        // If no origin or localhost, allow it
-        if (!origin || origin.startsWith('http://localhost:')) {
-          return cb(null, true)
-        }
-        cb(new Error('Not allowed'), false)
+        // Allow all origins in development
+        return cb(null, true);
       },
       methods: ['GET', 'POST', 'PUT', 'DELETE'],
       credentials: true

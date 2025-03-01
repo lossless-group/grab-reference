@@ -26,7 +26,7 @@ publishedYear Int?
 publishedMonth Int? @db.SmallInt
 publishedDay Int? @db.SmallInt
 publishedOn String?
-responseDescription String?
+responseDescription String? @db.Text
 }
 
 model Author {

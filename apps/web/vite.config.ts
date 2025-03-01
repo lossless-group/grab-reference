@@ -23,13 +23,13 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       port: PORT,
-      host: true,
+      host: '0.0.0.0',
       watch: {
         usePolling: true
       },
       proxy: {
         '/api': {
-          target: 'http://localhost:8080',
+          target: 'http://citation-service:8080',
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, '')
         }
