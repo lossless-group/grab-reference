@@ -1,35 +1,18 @@
 import * as React from 'react';
 import { create, props } from '@stylexjs/stylex';
 import { observeUrl } from '@citation-manager/shared/utils/url-observer';
-import CitationsWindow from './components/CitationsWindow';
-import CiteCreator from './components/CiteCreator';
+import { ResponseViewer } from './ResponseViewer';
+import { YouTubeResponseViewer } from './YouTubeResponseViewer';
 
 const styles = create({
   container: {
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'center',
     alignItems: 'center',
-    minHeight: '100vh',
-    backgroundColor: 'white',
-    padding: '1rem'
-  },
-  header: {
-    fontSize: '2.5rem',
-    fontWeight: 'bold',
-    color: '#111827',
-    marginBottom: '2rem',
-    textAlign: 'center'
-  },
-  contentWrapper: {
     width: '100%',
-    maxWidth: '1200px',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: '2rem'
+    maxWidth: '800px'
   },
-  text: {
+  title: {
     fontSize: '2rem',
     color: '#1a1a1a',
     fontFamily: 'system-ui, -apple-system, sans-serif',
@@ -83,23 +66,10 @@ const styles = create({
     border: '1px solid #ccc',
     fontSize: '0.875rem',
     wordBreak: 'break-all'
-  },
-  toast: {
-    position: 'fixed',
-    bottom: '20px',
-    right: '20px',
-    padding: '1rem',
-    backgroundColor: '#ff4444',
-    color: 'white',
-    borderRadius: '4px',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-    zIndex: 1000
   }
 });
 
-const App: React.FC = () => {
-  console.log('App component rendering');
-
+const CiteCreator: React.FC = () => {
   const [citeQueue, setCiteQueue] = React.useState<string[]>([]);
   const [inputUrl, setInputUrl] = React.useState('');
   const [source, setSource] = React.useState<{ type: string; data?: any; url?: string } | null>(null);
@@ -124,14 +94,51 @@ const App: React.FC = () => {
   };
 
   return (
-    <div {...props(styles.container)} className="app-container">
-      <h1 {...props(styles.header)}>Citation Manager</h1>
-      <div {...props(styles.contentWrapper)}>
-        <CiteCreator />
-        <CitationsWindow />
-      </div>
+    <div {...props(styles.container)}>
+      <h4 {...props(styles.title)}>Grab a citation</h4>
+      <form {...props(styles.form)} className="citation-form" onSubmit={handleSubmit}>
+        <input
+          {...props(styles.input)}
+          className="url-input"
+          type="url"
+          placeholder="Enter URL"
+          required
+          value={inputUrl}
+          onChange={(e) => setInputUrl(e.target.value)}
+        />
+        <button {...props(styles.button)} className="submit-button" type="submit">
+          Get Citation
+        </button>
+      </form>
+      
+      {citeQueue.length > 0 && (
+        <div {...props(styles.queueContainer)} className="queue-container">
+          <ul {...props(styles.queueList)} className="queue-list">
+            {[...citeQueue].reverse().map((url, index) => (
+              <li key={index} {...props(styles.queueItem)} className="queue-item">
+                {url}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {(source || error) && (
+        <>
+          <ResponseViewer 
+            type={source?.type as 'youtube' | 'google-books' | 'unsupported'}
+            data={source?.data}
+            error={error || undefined}
+          />
+          {source?.type === 'youtube' && source.data && (
+            <YouTubeResponseViewer 
+              data={source.data} 
+              url={source.url || ''}
+            />
+          )}
+        </>
+      )}
     </div>
   );
 };
 
-export default App; 
+export default CiteCreator;
