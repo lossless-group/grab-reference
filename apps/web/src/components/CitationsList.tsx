@@ -1,4 +1,3 @@
-import React from 'react';
 import CitationLine, { Citation } from './CitationLine';
 import { create, props } from '@stylexjs/stylex';
 import { useCitations } from '../contexts/CitationContext';
