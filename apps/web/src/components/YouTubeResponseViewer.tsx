@@ -37,6 +37,7 @@ const styles = create({
   field: {
     marginBottom: '0.75rem',
     width: '100%',
+    fontSize: '0.675rem',
     wordBreak: 'break-word',
     boxSizing: 'border-box',
   },
@@ -119,9 +120,9 @@ const styles = create({
   },
   copyButton: {
     position: 'absolute',
-    top: '0.5rem',
-    right: '0.5rem',
-    padding: '0.25rem 0.5rem',
+    top: '0.2rem',
+    right: '0.2rem',
+    padding: '0.15rem 0.15rem',
     backgroundColor: '#e5e7eb',
     border: 'none',
     borderRadius: '4px',
